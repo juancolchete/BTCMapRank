@@ -493,6 +493,12 @@ export function BitcoinRankingDashboard() {
     })
   }
 
+  const removeFromComparison = (item: any) => {
+    setSelectedItems((prev) =>
+      prev.filter((selected) => selected.name !== item.name && selected.url_alias !== item.url_alias),
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header
@@ -606,26 +612,36 @@ export function BitcoinRankingDashboard() {
                                 return (
                                   <>
                                     <div
-                                      className="bg-orange-600 h-16 absolute left-0 top-0 transition-all duration-500 flex items-center justify-center"
-                                      style={{ width: `${firstPercentage}%` }}
+                                      className="h-16 absolute left-0 top-0 transition-all duration-500 flex items-center justify-center"
+                                      style={{
+                                        width: `${firstPercentage}%`,
+                                        backgroundColor: "#c2410c !important", // Using darker orange with !important
+                                      }}
                                     >
                                       <span
-                                        className="text-white text-xl font-bold px-2"
-                                        style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.7)" }}
+                                        className="text-xl font-bold px-2"
+                                        style={{
+                                          textShadow: "3px 3px 6px rgba(0,0,0,0.9)",
+                                          color: "#ffffff !important",
+                                        }}
                                       >
                                         {firstPercentage.toFixed(1)}%
                                       </span>
                                     </div>
                                     <div
-                                      className="bg-orange-400 h-16 absolute top-0 transition-all duration-500 flex items-center justify-center"
+                                      className="h-16 absolute top-0 transition-all duration-500 flex items-center justify-center"
                                       style={{
                                         left: `${firstPercentage}%`,
                                         width: `${secondPercentage}%`,
+                                        backgroundColor: "#9a3412 !important", // Using even darker orange with !important
                                       }}
                                     >
                                       <span
-                                        className="text-white text-xl font-bold px-2"
-                                        style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.7)" }}
+                                        className="text-xl font-bold px-2"
+                                        style={{
+                                          textShadow: "3px 3px 6px rgba(0,0,0,0.9)",
+                                          color: "#ffffff !important",
+                                        }}
                                       >
                                         {secondPercentage.toFixed(1)}%
                                       </span>
@@ -702,29 +718,40 @@ export function BitcoinRankingDashboard() {
 
                         return (
                           <>
-                            {/* First place segment */}
                             <div
-                              className="bg-orange-600 h-8 absolute left-0 top-0 transition-all duration-500 flex items-center justify-center"
-                              style={{ width: `${firstPercentage}%` }}
+                              className="h-8 absolute left-0 top-0 transition-all duration-500 flex items-center justify-center"
+                              style={{
+                                width: `${firstPercentage}%`,
+                                backgroundColor: "#c2410c !important", // Using darker orange with !important
+                              }}
                             >
                               <span
-                                className="text-white text-sm font-bold px-1"
-                                style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
+                                className="font-bold px-1"
+                                style={{
+                                  textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
+                                  color: "#ffffff !important",
+                                  fontSize: "14px",
+                                }}
                               >
                                 {firstPercentage.toFixed(1)}%
                               </span>
                             </div>
                             {/* Second place segment */}
                             <div
-                              className="bg-orange-400 h-8 absolute top-0 transition-all duration-500 flex items-center justify-center"
+                              className="h-8 absolute top-0 transition-all duration-500 flex items-center justify-center"
                               style={{
                                 left: `${firstPercentage}%`,
                                 width: `${secondPercentage}%`,
+                                backgroundColor: "#9a3412 !important", // Using even darker orange with !important
                               }}
                             >
                               <span
-                                className="text-white text-sm font-bold px-1"
-                                style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
+                                className="font-bold px-1"
+                                style={{
+                                  textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
+                                  color: "#ffffff !important",
+                                  fontSize: "14px",
+                                }}
                               >
                                 {secondPercentage.toFixed(1)}%
                               </span>
@@ -831,7 +858,7 @@ export function BitcoinRankingDashboard() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -840,66 +867,71 @@ export function BitcoinRankingDashboard() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setFullScreenChart("countries")}
-                  className="h-8 w-8 p-0"
+                  className="h-8 w-8 p-0 flex-shrink-0"
                 >
                   <Expand className="h-4 w-4" />
                 </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" tick={false} axisLine={false} />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value: any, name: any, props: any) => [value.toLocaleString(), "Merchants"]}
-                    labelFormatter={(label: any, payload: any) => {
-                      if (payload && payload[0]) {
-                        return `${payload[0].payload.flag} ${payload[0].payload.name}`
-                      }
-                      return label
-                    }}
-                  />
-                  <Bar
-                    dataKey="merchants"
-                    shape={({ payload, ...props }) => {
-                      if (!payload) return null
-                      const { x, y, width, height } = props
-                      return (
-                        <g>
-                          {/* Background bar with flag pattern */}
-                          <rect
-                            x={x}
-                            y={y}
-                            width={width}
-                            height={height}
-                            fill="url(#flagPattern)"
-                            stroke="#ea580c"
-                            strokeWidth={2}
-                          />
-                          {/* Flag emoji repeated as pattern */}
+              <div className="w-full overflow-x-auto">
+                <ResponsiveContainer width="100%" height={300} minWidth={300}>
+                  <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" tick={false} axisLine={false} />
+                    <YAxis tick={{ fontSize: 12 }} />
+                    <Tooltip
+                      formatter={(value: any, name: any, props: any) => [value.toLocaleString(), "Merchants"]}
+                      labelFormatter={(label: any, payload: any) => {
+                        if (payload && payload[0]) {
+                          return `${payload[0].payload.flag} ${payload[0].payload.name}`
+                        }
+                        return label
+                      }}
+                    />
+                    <Bar
+                      dataKey="merchants"
+                      label={({ payload, x, y, width, height }) => {
+                        if (!payload || !x || !y || !width || !height) return null
+                        return (
                           <text
                             x={x + width / 2}
                             y={y + height / 2}
                             textAnchor="middle"
-                            fontSize={Math.min(width / 2, height / 3, 20)}
+                            fontSize={Math.min(width / 3, height / 3, 16)}
                             fill="white"
-                            textShadow="1px 1px 2px rgba(0,0,0,0.8)"
+                            style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
                           >
                             {payload.flag}
                           </text>
-                        </g>
-                      )
-                    }}
-                  />
-                  <defs>
-                    <pattern id="flagPattern" patternUnits="userSpaceOnUse" width="40" height="40">
-                      <rect width="40" height="40" fill="#ea580c" opacity="0.3" />
-                    </pattern>
-                  </defs>
-                </BarChart>
-              </ResponsiveContainer>
+                        )
+                      }}
+                      shape={({ payload, ...props }) => {
+                        if (!payload) return null
+                        const { x, y, width, height } = props
+                        return (
+                          <g>
+                            <rect
+                              x={x}
+                              y={y}
+                              width={width}
+                              height={height}
+                              fill="url(#flagPattern)"
+                              stroke="#ea580c"
+                              strokeWidth={1}
+                            />
+                          </g>
+                        )
+                      }}
+                    />
+                    <defs>
+                      <pattern id="flagPattern" patternUnits="userSpaceOnUse" width="20" height="20">
+                        <rect width="20" height="20" fill="#ea580c" opacity="0.3" />
+                      </pattern>
+                    </defs>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
 
@@ -911,90 +943,107 @@ export function BitcoinRankingDashboard() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setFullScreenChart("organizations")}
-                  className="h-8 w-8 p-0"
+                  className="h-8 w-8 p-0 flex-shrink-0"
                 >
                   <Expand className="h-4 w-4" />
                 </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={organizationChartData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {organizationChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value: any) => [value.toLocaleString(), "Merchants"]} />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="w-full flex justify-center">
+                <ResponsiveContainer width="100%" height={300} minWidth={250}>
+                  <PieChart>
+                    <Pie
+                      data={organizationChartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => {
+                        const truncatedName = name.length > 8 ? name.substring(0, 8) + "..." : name
+                        return `${truncatedName} ${(percent * 100).toFixed(0)}%`
+                      }}
+                      outerRadius={window.innerWidth < 640 ? 80 : 100}
+                      fill="#8884d8"
+                      dataKey="value"
+                      fontSize={window.innerWidth < 640 ? 10 : 12}
+                    >
+                      {organizationChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value: any) => [value.toLocaleString(), "Merchants"]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Filters and Search */}
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            <Input
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:w-64 md:w-80"
-            />
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <Input
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full sm:w-64 md:w-80"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full sm:w-40">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="merchants">Merchants</SelectItem>
+                  <SelectItem value="growth">Growth Rate</SelectItem>
+                  <SelectItem value="adoption">Adoption Rate</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-40">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="merchants">Merchants</SelectItem>
-                <SelectItem value="growth">Growth Rate</SelectItem>
-                <SelectItem value="adoption">Adoption Rate</SelectItem>
-              </SelectContent>
-            </Select>
-            {selectedItems.length > 0 && (
-              <div className="flex gap-2 w-full sm:w-auto">
-                <Button
-                  onClick={() => setShowComparison(!showComparison)}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 sm:flex-none"
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Compare ({selectedItems.length})
-                </Button>
-                <Button
-                  onClick={handleViewOnBTCMap}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 sm:flex-none bg-transparent"
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  View on BTCMap
-                </Button>
-              </div>
-            )}
-          </div>
+
+          {selectedItems.length > 0 && (
+            <div className="flex flex-col sm:flex-row gap-2 w-full">
+              <Button
+                onClick={() => setShowComparison(!showComparison)}
+                variant="outline"
+                size="sm"
+                className="w-full sm:w-auto"
+              >
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Compare ({selectedItems.length})
+              </Button>
+              <Button
+                onClick={handleViewOnBTCMap}
+                variant="outline"
+                size="sm"
+                className="w-full sm:w-auto bg-transparent"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                View on BTCMap
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Rankings Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
-            <TabsTrigger value="countries">Countries</TabsTrigger>
-            <TabsTrigger value="organizations">Organizations</TabsTrigger>
-            <TabsTrigger value="communities">Communities</TabsTrigger>
-            <TabsTrigger value="global">Global</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1">
+            <TabsTrigger value="countries" className="text-xs sm:text-sm py-2">
+              Countries
+            </TabsTrigger>
+            <TabsTrigger value="organizations" className="text-xs sm:text-sm py-2">
+              Organizations
+            </TabsTrigger>
+            <TabsTrigger value="communities" className="text-xs sm:text-sm py-2">
+              Communities
+            </TabsTrigger>
+            <TabsTrigger value="global" className="text-xs sm:text-sm py-2">
+              Global
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="countries" className="space-y-4">
@@ -1250,43 +1299,36 @@ export function BitcoinRankingDashboard() {
 
         {/* Floating Comparison Component */}
         {showComparison && selectedItems.length > 0 && (
-          <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-96 bg-white dark:bg-gray-800 border rounded-lg shadow-lg p-4 z-50 max-h-80 overflow-y-auto">
+          <div className="fixed bottom-4 left-2 right-2 sm:left-auto sm:right-4 sm:w-96 bg-white dark:bg-gray-800 border rounded-lg shadow-lg p-3 sm:p-4 z-50 max-h-80 overflow-y-auto">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-lg">Compare Rankings</h3>
-              <Button variant="ghost" size="sm" onClick={() => setShowComparison(false)}>
+              <h3 className="font-semibold text-base sm:text-lg">Compare Rankings</h3>
+              <Button variant="ghost" size="sm" onClick={() => setShowComparison(false)} className="h-8 w-8 p-0">
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {selectedItems.map((item, index) => (
                 <div
                   key={`${item.type}-${item.name || item.url_alias}`}
-                  className="flex items-center justify-between p-2 bg-orange-50 rounded"
+                  className="flex items-center justify-between p-2 bg-orange-50 rounded text-sm"
                 >
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <Badge variant="outline" className="text-xs flex-shrink-0">
                       #{item.rank || index + 1}
                     </Badge>
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge variant="secondary" className="text-xs flex-shrink-0">
                       {item.type}
                     </Badge>
-                    <span className="font-medium text-sm">{item.name || item.url_alias}</span>
+                    <span className="truncate text-xs sm:text-sm">{item.name || item.url_alias}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-orange-600">
-                      {(item.merchantCount || 0).toLocaleString()}
-                    </span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="text-xs sm:text-sm font-medium">{item.merchantCount?.toLocaleString()}</span>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() =>
-                        setSelectedItems((prev) =>
-                          prev.filter(
-                            (selected) => selected.name !== item.name && selected.url_alias !== item.url_alias,
-                          ),
-                        )
-                      }
+                      onClick={() => removeFromComparison(item)}
+                      className="h-6 w-6 p-0"
                     >
                       <X className="h-3 w-3" />
                     </Button>
@@ -1294,48 +1336,41 @@ export function BitcoinRankingDashboard() {
                 </div>
               ))}
             </div>
-
-            {selectedItems.length > 1 && (
-              <div className="mt-3 pt-3 border-t">
-                <div className="text-xs text-muted-foreground">
-                  Difference:{" "}
-                  {Math.abs(
-                    (selectedItems[0]?.merchantCount || 0) - (selectedItems[1]?.merchantCount || 0),
-                  ).toLocaleString()}{" "}
-                  merchants
-                </div>
-              </div>
-            )}
           </div>
         )}
 
         {/* Full Screen Chart Modals */}
         {fullScreenChart && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-6xl max-h-[90vh] overflow-auto">
-              <div className="p-4 sm:p-6">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-6xl max-h-[95vh] overflow-auto">
+              <div className="p-3 sm:p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg sm:text-xl font-semibold">
+                  <h3 className="text-base sm:text-xl font-semibold truncate">
                     {fullScreenChart === "countries" ? "Top Countries by Merchant Count" : "Organization Distribution"}
                   </h3>
-                  <Button variant="ghost" size="sm" onClick={() => setFullScreenChart(null)} className="h-8 w-8 p-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFullScreenChart(null)}
+                    className="h-8 w-8 p-0 flex-shrink-0"
+                  >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="w-full">
-                  <ResponsiveContainer width="100%" height={400}>
+                <div className="w-full overflow-x-auto">
+                  <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 300 : 400} minWidth={300}>
                     {fullScreenChart === "countries" ? (
-                      <BarChart data={chartData}>
+                      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
                           dataKey="name"
-                          tick={{ fontSize: 12 }}
+                          tick={{ fontSize: window.innerWidth < 640 ? 10 : 12 }}
                           angle={-45}
                           textAnchor="end"
-                          height={60}
+                          height={80}
                           interval={0}
                         />
-                        <YAxis />
+                        <YAxis tick={{ fontSize: window.innerWidth < 640 ? 10 : 12 }} />
                         <Tooltip
                           formatter={(value: any, name: any, props: any) => [value.toLocaleString(), "Merchants"]}
                           labelFormatter={(label: any, payload: any) => {
@@ -1365,9 +1400,9 @@ export function BitcoinRankingDashboard() {
                                   x={x + width / 2}
                                   y={y + height / 2}
                                   textAnchor="middle"
-                                  fontSize={Math.min(width / 2, height / 3, 20)}
+                                  fontSize={Math.min(width / 2, height / 3, window.innerWidth < 640 ? 16 : 20)}
                                   fill="white"
-                                  textShadow="1px 1px 2px rgba(0,0,0,0.8)"
+                                  style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
                                 >
                                   {payload.flag}
                                 </text>
@@ -1389,9 +1424,10 @@ export function BitcoinRankingDashboard() {
                           cy="50%"
                           labelLine={false}
                           label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={150}
+                          outerRadius={window.innerWidth < 640 ? 100 : 150}
                           fill="#8884d8"
                           dataKey="value"
+                          fontSize={window.innerWidth < 640 ? 10 : 12}
                         >
                           {organizationChartData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
