@@ -716,9 +716,10 @@ export function BitcoinRankingDashboard() {
                       return (
                         <text
                           x={payload.x + (payload.width || 0) / 2}
-                          y={payload.y + (payload.height || 0) + 15}
+                          y={payload.y + (payload.height || 0) / 2}
                           textAnchor="middle"
-                          fontSize="20"
+                          fontSize="24"
+                          fill="white"
                         >
                           {payload.flag || ""}
                         </text>
