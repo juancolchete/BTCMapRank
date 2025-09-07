@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { Search, TrendingUp, Globe } from "lucide-react"
+import { Search, Globe } from "lucide-react"
 
 // Mock data based on research findings
 const countryData = [
@@ -233,6 +233,29 @@ export function BitcoinRankingDashboard() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const countryFlagMap: { [key: string]: string } = {
+    India: "🇮🇳",
+    Nigeria: "🇳🇬",
+    Vietnam: "🇻🇳",
+    "United States": "🇺🇸",
+    Ukraine: "🇺🇦",
+    Indonesia: "🇮🇩",
+    Brazil: "🇧🇷",
+    Philippines: "🇵🇭",
+    Thailand: "🇹🇭",
+    Turkey: "🇹🇷",
+    Germany: "🇩🇪",
+    "United Kingdom": "🇬🇧",
+    France: "🇫🇷",
+    Canada: "🇨🇦",
+    Australia: "🇦🇺",
+    Japan: "🇯🇵",
+    "South Korea": "🇰🇷",
+    Mexico: "🇲🇽",
+    Argentina: "🇦🇷",
+    "South Africa": "🇿🇦",
+  }
+
   useEffect(() => {
     const fetchGithubRanking = async () => {
       if (activeTab !== "global") return
@@ -399,11 +422,13 @@ export function BitcoinRankingDashboard() {
     githubCountryData.length > 0
       ? githubCountryData.slice(0, 5).map((country) => ({
           name: country.name,
+          flag: countryFlagMap[country.name] || "🏳️",
           merchants: country.merchantCount,
           growth: 0, // Growth data not available in GitHub API
         }))
       : countryData.slice(0, 5).map((country) => ({
           name: country.name,
+          flag: country.flag,
           merchants: country.merchants,
           growth: country.growth,
         }))
@@ -469,7 +494,7 @@ export function BitcoinRankingDashboard() {
 
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Merchants</CardTitle>
@@ -486,19 +511,6 @@ export function BitcoinRankingDashboard() {
               <p className="text-xs text-muted-foreground">
                 {githubRankingData.length > 0 ? "Top ranked location" : "Leading country"}
               </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Growth</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-orange-600">
-                {(countryData.reduce((sum, country) => sum + country.growth, 0) / countryData.length).toFixed(2)}%
-              </div>
-              <p className="text-xs text-muted-foreground">Year over year</p>
             </CardContent>
           </Card>
 
@@ -526,11 +538,73 @@ export function BitcoinRankingDashboard() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Communities</CardTitle>
+              <CardTitle>
+                {activeTab === "global"
+                  ? "Global Dominance"
+                  : activeTab === "organizations"
+                    ? "Organizations"
+                    : activeTab === "countries"
+                      ? "Countries"
+                      : "Communities"}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{organizationData.length}</div>
-              <p className="text-xs text-muted-foreground">Active organizations</p>
+              <div className="text-2xl font-bold text-orange-600">
+                {activeTab === "global" && githubRankingData.length >= 2 ? (
+                  `${(((githubRankingData[0]?.merchantCount || 0) / (githubRankingData[1]?.merchantCount || 1)) * 100).toFixed(1)}%`
+                ) : activeTab === "global" && githubRankingData.length === 1 ? (
+                  "100%"
+                ) : activeTab === "global" && (isLoading || githubRankingData.length === 0) ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                    <span className="text-sm">Loading...</span>
+                  </div>
+                ) : activeTab === "organizations" ? (
+                  githubOrgData.length > 0 ? (
+                    githubOrgData.length
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                      <span className="text-sm">Loading...</span>
+                    </div>
+                  )
+                ) : activeTab === "countries" ? (
+                  githubCountryData.length > 0 ? (
+                    githubCountryData.length
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                      <span className="text-sm">Loading...</span>
+                    </div>
+                  )
+                ) : githubCommunityData.length > 0 ? (
+                  githubCommunityData.length
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                    <span className="text-sm">Loading...</span>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {activeTab === "global" && githubRankingData.length >= 2
+                  ? `${githubRankingData[0]?.url_alias || "Top"} vs ${githubRankingData[1]?.url_alias || "Second"}`
+                  : activeTab === "global" && githubRankingData.length === 1
+                    ? `${githubRankingData[0]?.url_alias || "Top"} leads globally`
+                    : activeTab === "global" && (isLoading || githubRankingData.length === 0)
+                      ? "Calculating dominance..."
+                      : activeTab === "organizations"
+                        ? githubOrgData.length > 0
+                          ? "Active organizations"
+                          : "Loading organizations..."
+                        : activeTab === "countries"
+                          ? githubCountryData.length > 0
+                            ? "Total countries"
+                            : "Loading countries..."
+                          : githubCommunityData.length > 0
+                            ? "Active communities"
+                            : "Loading communities..."}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -544,10 +618,31 @@ export function BitcoinRankingDashboard() {
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" fontSize={10} angle={-45} textAnchor="end" height={60} interval={0} />
+                  <XAxis dataKey="name" tick={false} axisLine={false} />
                   <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="merchants" fill="#ea580c" />
+                  <Tooltip
+                    formatter={(value: any, name: any, props: any) => [value.toLocaleString(), "Merchants"]}
+                    labelFormatter={(label: any, payload: any) => {
+                      if (payload && payload[0]) {
+                        return `${payload[0].payload.flag} ${payload[0].payload.name}`
+                      }
+                      return label
+                    }}
+                  />
+                  <Bar
+                    dataKey="merchants"
+                    fill="#ea580c"
+                    label={({ payload }) => (
+                      <text
+                        x={payload.x + payload.width / 2}
+                        y={payload.y + payload.height + 15}
+                        textAnchor="middle"
+                        fontSize="20"
+                      >
+                        {payload.flag}
+                      </text>
+                    )}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
