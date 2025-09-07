@@ -599,13 +599,13 @@ export function BitcoinRankingDashboard() {
 
                     {/* Labels below the bar */}
                     <div className="flex justify-between mt-2">
-                      <div className="text-sm font-medium text-orange-600 truncate max-w-[45%]">
+                      <div className="text-sm font-medium text-orange-600 flex-1 mr-2">
                         #{1} {githubRankingData[0]?.url_alias || "First"}
                         <div className="text-xs text-muted-foreground">
                           {(githubRankingData[0]?.merchantCount || 0).toLocaleString()} merchants
                         </div>
                       </div>
-                      <div className="text-sm font-medium text-orange-400 truncate max-w-[45%] text-right">
+                      <div className="text-sm font-medium text-orange-400 flex-1 ml-2 text-right">
                         #{2} {githubRankingData[1]?.url_alias || "Second"}
                         <div className="text-xs text-muted-foreground">
                           {(githubRankingData[1]?.merchantCount || 0).toLocaleString()} merchants
