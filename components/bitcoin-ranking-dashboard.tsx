@@ -579,8 +579,11 @@ export function BitcoinRankingDashboard() {
                             </div>
                             {/* Second place segment */}
                             <div
-                              className="bg-orange-400 h-8 absolute right-0 top-0 transition-all duration-500 flex items-center justify-center"
-                              style={{ width: `${secondPercentage}%` }}
+                              className="bg-orange-400 h-8 absolute top-0 transition-all duration-500 flex items-center justify-center"
+                              style={{
+                                left: `${firstPercentage}%`,
+                                width: `${secondPercentage}%`,
+                              }}
                             >
                               <span
                                 className="text-white text-sm font-bold truncate px-1"
@@ -706,16 +709,21 @@ export function BitcoinRankingDashboard() {
                   <Bar
                     dataKey="merchants"
                     fill="#ea580c"
-                    label={({ payload }) => (
-                      <text
-                        x={payload.x + payload.width / 2}
-                        y={payload.y + payload.height + 15}
-                        textAnchor="middle"
-                        fontSize="20"
-                      >
-                        {payload.flag}
-                      </text>
-                    )}
+                    label={({ payload }) => {
+                      if (!payload || typeof payload.x === "undefined" || typeof payload.y === "undefined") {
+                        return null
+                      }
+                      return (
+                        <text
+                          x={payload.x + (payload.width || 0) / 2}
+                          y={payload.y + (payload.height || 0) + 15}
+                          textAnchor="middle"
+                          fontSize="20"
+                        >
+                          {payload.flag || ""}
+                        </text>
+                      )
+                    }}
                   />
                 </BarChart>
               </ResponsiveContainer>
