@@ -1184,7 +1184,15 @@ export function BitcoinRankingDashboard() {
             {!isLoading && !error && (
               <div className="grid gap-4">
                 {filteredGithubOrgs.map((org) => (
-                  <Card key={org.rank} className="hover:bg-muted/50 transition-colors">
+                  <Card
+                    key={org.rank}
+                    className="hover:bg-muted/50 transition-colors cursor-pointer"
+                    onClick={() => {
+                      if (org.name) {
+                        window.open(`https://btcmap.org/communities/${encodeURIComponent(org.name)}`, "_blank")
+                      }
+                    }}
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -1195,6 +1203,14 @@ export function BitcoinRankingDashboard() {
                             <h3 className="font-semibold text-lg">{org.name}</h3>
                             <div className="flex items-center gap-2 mt-1">
                               <Badge variant="secondary">Organization</Badge>
+                              {org.name && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs bg-orange-50 text-orange-700 border-orange-200"
+                                >
+                                  View on BTCMap
+                                </Badge>
+                              )}
                             </div>
                           </div>
                         </div>
