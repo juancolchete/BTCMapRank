@@ -193,12 +193,6 @@ const globalRankingData = [
   },
 ]
 
-const chartData = countryData.slice(0, 6).map((country) => ({
-  name: country.name,
-  merchants: country.merchants,
-  growth: country.growth,
-}))
-
 const pieData = [
   { name: "Asia", value: 35, color: "var(--chart-1)" },
   { name: "Americas", value: 28, color: "var(--chart-2)" },
@@ -402,6 +396,19 @@ export function BitcoinRankingDashboard() {
   const totalCommunityMerchants = githubCommunityData.reduce((sum, community) => {
     return sum + (community?.merchantCount || 0)
   }, 0)
+
+  const chartData =
+    githubCountryData.length > 0
+      ? githubCountryData.slice(0, 5).map((country) => ({
+          name: country.name,
+          merchants: country.merchantCount,
+          growth: 0, // Growth data not available in GitHub API
+        }))
+      : countryData.slice(0, 5).map((country) => ({
+          name: country.name,
+          merchants: country.merchants,
+          growth: country.growth,
+        }))
 
   return (
     <div className="min-h-screen bg-background">
