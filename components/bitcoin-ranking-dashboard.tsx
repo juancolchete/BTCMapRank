@@ -412,17 +412,33 @@ export function BitcoinRankingDashboard() {
 
   const organizationChartData =
     githubOrgData.length > 0
-      ? githubOrgData.slice(0, 5).map((org, index) => ({
-          name: org.name.length > 15 ? org.name.substring(0, 15) + "..." : org.name,
-          value: org.merchantCount,
-          color: `hsl(${25 + index * 45}, 70%, 50%)`, // Orange-based color palette
-        }))
+      ? (() => {
+          const top4Orgs = githubOrgData.slice(0, 4)
+          const remainingOrgs = githubOrgData.slice(4)
+          const otherTotal = remainingOrgs.reduce((sum, org) => sum + org.merchantCount, 0)
+
+          const chartData = top4Orgs.map((org, index) => ({
+            name: org.name.length > 15 ? org.name.substring(0, 15) + "..." : org.name,
+            value: org.merchantCount,
+            color: `hsl(${25 + index * 45}, 70%, 50%)`, // Orange-based color palette
+          }))
+
+          if (otherTotal > 0) {
+            chartData.push({
+              name: "Other",
+              value: otherTotal,
+              color: "#94a3b8", // Gray color for "Other"
+            })
+          }
+
+          return chartData
+        })()
       : [
           { name: "Bitcoin Beach", value: 2450, color: "#ea580c" },
           { name: "Bitcoin Ekasi", value: 1890, color: "#f97316" },
           { name: "Bitcoin Lake", value: 1650, color: "#fb923c" },
           { name: "Bitcoin Jungle", value: 1420, color: "#fdba74" },
-          { name: "Bitcoin Berlin", value: 980, color: "#fed7aa" },
+          { name: "Other", value: 980, color: "#94a3b8" },
         ]
 
   return (
@@ -535,33 +551,6 @@ export function BitcoinRankingDashboard() {
                   <Tooltip />
                   <Bar dataKey="merchants" fill="#ea580c" />
                 </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Regional Distribution</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
@@ -735,14 +724,12 @@ export function BitcoinRankingDashboard() {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            )}
 
-                {filteredGithubCountries.length === 0 && !isLoading && !error && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    {githubCountryData.length === 0
-                      ? "No country data available"
-                      : `No results found for "${searchTerm}"`}
-                  </div>
-                )}
+            {filteredGithubCountries.length === 0 && !isLoading && !error && (
+              <div className="text-center py-8 text-muted-foreground">
+                {githubCountryData.length === 0 ? "No country data available" : `No results found for "${searchTerm}"`}
               </div>
             )}
           </TabsContent>
