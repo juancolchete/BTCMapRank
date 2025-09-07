@@ -570,7 +570,10 @@ export function BitcoinRankingDashboard() {
                               className="bg-orange-600 h-8 absolute left-0 top-0 transition-all duration-500 flex items-center justify-center"
                               style={{ width: `${firstPercentage}%` }}
                             >
-                              <span className="text-white text-xs font-bold truncate px-1">
+                              <span
+                                className="text-white text-sm font-bold truncate px-1"
+                                style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
+                              >
                                 {firstPercentage.toFixed(1)}%
                               </span>
                             </div>
@@ -579,7 +582,10 @@ export function BitcoinRankingDashboard() {
                               className="bg-orange-400 h-8 absolute right-0 top-0 transition-all duration-500 flex items-center justify-center"
                               style={{ width: `${secondPercentage}%` }}
                             >
-                              <span className="text-white text-xs font-bold truncate px-1">
+                              <span
+                                className="text-white text-sm font-bold truncate px-1"
+                                style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
+                              >
                                 {secondPercentage.toFixed(1)}%
                               </span>
                             </div>
