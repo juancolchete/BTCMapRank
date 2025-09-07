@@ -410,6 +410,21 @@ export function BitcoinRankingDashboard() {
           growth: country.growth,
         }))
 
+  const organizationChartData =
+    githubOrgData.length > 0
+      ? githubOrgData.slice(0, 5).map((org, index) => ({
+          name: org.name.length > 15 ? org.name.substring(0, 15) + "..." : org.name,
+          value: org.merchantCount,
+          color: `hsl(${25 + index * 45}, 70%, 50%)`, // Orange-based color palette
+        }))
+      : [
+          { name: "Bitcoin Beach", value: 2450, color: "#ea580c" },
+          { name: "Bitcoin Ekasi", value: 1890, color: "#f97316" },
+          { name: "Bitcoin Lake", value: 1650, color: "#fb923c" },
+          { name: "Bitcoin Jungle", value: 1420, color: "#fdba74" },
+          { name: "Bitcoin Berlin", value: 980, color: "#fed7aa" },
+        ]
+
   return (
     <div className="min-h-screen bg-background">
       <header
@@ -559,15 +574,7 @@ export function BitcoinRankingDashboard() {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={
-                      githubOrgData.length > 0
-                        ? githubOrgData.slice(0, 5).map((org, index) => ({
-                            name: org.name.length > 15 ? org.name.substring(0, 15) + "..." : org.name,
-                            value: org.merchantCount,
-                            color: `hsl(${(index * 72) % 360}, 70%, 50%)`,
-                          }))
-                        : pieData
-                    }
+                    data={organizationChartData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -576,18 +583,11 @@ export function BitcoinRankingDashboard() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {(githubOrgData.length > 0
-                      ? githubOrgData.slice(0, 5).map((org, index) => ({
-                          name: org.name,
-                          value: org.merchantCount,
-                          color: `hsl(${(index * 72) % 360}, 70%, 50%)`,
-                        }))
-                      : pieData
-                    ).map((entry, index) => (
+                    {organizationChartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip formatter={(value: any) => [value.toLocaleString(), "Merchants"]} />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
@@ -791,14 +791,14 @@ export function BitcoinRankingDashboard() {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            )}
 
-                {filteredGithubOrgs.length === 0 && !isLoading && !error && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    {githubOrgData.length === 0
-                      ? "No organizations data available"
-                      : `No results found for "${searchTerm}"`}
-                  </div>
-                )}
+            {filteredGithubOrgs.length === 0 && !isLoading && !error && (
+              <div className="text-center py-8 text-muted-foreground">
+                {githubOrgData.length === 0
+                  ? "No organizations data available"
+                  : `No results found for "${searchTerm}"`}
               </div>
             )}
           </TabsContent>
