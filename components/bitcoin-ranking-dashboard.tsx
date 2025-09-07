@@ -223,6 +223,7 @@ interface GitHubOrgItem {
 interface GitHubCommunityItem {
   name: string
   merchantCount: number
+  url_alias?: string
 }
 
 export function BitcoinRankingDashboard() {
@@ -844,24 +845,41 @@ export function BitcoinRankingDashboard() {
                           />
                           <Bar
                             dataKey="merchants"
-                            fill="#ea580c"
-                            label={({ payload }) => {
-                              if (!payload || typeof payload.x === "undefined" || typeof payload.y === "undefined") {
-                                return null
-                              }
+                            shape={({ payload, ...props }) => {
+                              if (!payload) return null
+                              const { x, y, width, height } = props
                               return (
-                                <text
-                                  x={payload.x + (payload.width || 0) / 2}
-                                  y={payload.y + (payload.height || 0) / 2}
-                                  textAnchor="middle"
-                                  fontSize="32"
-                                  fill="white"
-                                >
-                                  {payload.flag || ""}
-                                </text>
+                                <g>
+                                  {/* Background bar with flag pattern */}
+                                  <rect
+                                    x={x}
+                                    y={y}
+                                    width={width}
+                                    height={height}
+                                    fill="url(#flagPattern)"
+                                    stroke="#ea580c"
+                                    strokeWidth={2}
+                                  />
+                                  {/* Flag emoji repeated as pattern */}
+                                  <text
+                                    x={x + width / 2}
+                                    y={y + height / 2}
+                                    textAnchor="middle"
+                                    fontSize={Math.min(width / 2, height / 3, 20)}
+                                    fill="white"
+                                    textShadow="1px 1px 2px rgba(0,0,0,0.8)"
+                                  >
+                                    {payload.flag}
+                                  </text>
+                                </g>
                               )
                             }}
                           />
+                          <defs>
+                            <pattern id="flagPattern" patternUnits="userSpaceOnUse" width="40" height="40">
+                              <rect width="40" height="40" fill="#ea580c" opacity="0.3" />
+                            </pattern>
+                          </defs>
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -886,24 +904,41 @@ export function BitcoinRankingDashboard() {
                   />
                   <Bar
                     dataKey="merchants"
-                    fill="#ea580c"
-                    label={({ payload }) => {
-                      if (!payload || typeof payload.x === "undefined" || typeof payload.y === "undefined") {
-                        return null
-                      }
+                    shape={({ payload, ...props }) => {
+                      if (!payload) return null
+                      const { x, y, width, height } = props
                       return (
-                        <text
-                          x={payload.x + (payload.width || 0) / 2}
-                          y={payload.y + (payload.height || 0) / 2}
-                          textAnchor="middle"
-                          fontSize="24"
-                          fill="white"
-                        >
-                          {payload.flag || ""}
-                        </text>
+                        <g>
+                          {/* Background bar with flag pattern */}
+                          <rect
+                            x={x}
+                            y={y}
+                            width={width}
+                            height={height}
+                            fill="url(#flagPatternLarge)"
+                            stroke="#ea580c"
+                            strokeWidth={3}
+                          />
+                          {/* Flag emoji repeated as pattern */}
+                          <text
+                            x={x + width / 2}
+                            y={y + height / 2}
+                            textAnchor="middle"
+                            fontSize={Math.min(width / 3, height / 4, 32)}
+                            fill="white"
+                            textShadow="2px 2px 4px rgba(0,0,0,0.8)"
+                          >
+                            {payload.flag}
+                          </text>
+                        </g>
                       )
                     }}
                   />
+                  <defs>
+                    <pattern id="flagPatternLarge" patternUnits="userSpaceOnUse" width="60" height="60">
+                      <rect width="60" height="60" fill="#ea580c" opacity="0.3" />
+                    </pattern>
+                  </defs>
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -1219,7 +1254,15 @@ export function BitcoinRankingDashboard() {
 
                 <div className="grid gap-4">
                   {filteredGithubCommunities.map((community) => (
-                    <Card key={community.rank} className="hover:bg-muted/50 transition-colors">
+                    <Card
+                      key={community.rank}
+                      className="hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => {
+                        if (community.url_alias) {
+                          window.open(`https://btcmap.org/community/${community.url_alias}`, "_blank")
+                        }
+                      }}
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
@@ -1230,6 +1273,11 @@ export function BitcoinRankingDashboard() {
                               <h3 className="font-semibold text-lg">{community.name}</h3>
                               <div className="flex items-center gap-2 mt-1">
                                 <Badge variant="secondary">Community</Badge>
+                                {community.url_alias && (
+                                  <Badge variant="outline" className="text-xs">
+                                    View on BTCMap
+                                  </Badge>
+                                )}
                               </div>
                             </div>
                           </div>
