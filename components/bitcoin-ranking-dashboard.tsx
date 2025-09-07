@@ -549,62 +549,130 @@ export function BitcoinRankingDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">
-                {activeTab === "global" && githubRankingData.length >= 2 ? (
-                  `${(((githubRankingData[0]?.merchantCount || 0) / (githubRankingData[1]?.merchantCount || 1)) * 100).toFixed(1)}%`
-                ) : activeTab === "global" && githubRankingData.length === 1 ? (
-                  "100%"
-                ) : activeTab === "global" && (isLoading || githubRankingData.length === 0) ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
-                    <span className="text-sm">Loading...</span>
+              {activeTab === "global" && githubRankingData.length >= 2 ? (
+                <div className="space-y-3">
+                  <div className="text-sm font-medium text-center text-muted-foreground">
+                    Merchant Count Distribution
                   </div>
-                ) : activeTab === "organizations" ? (
-                  githubOrgData.length > 0 ? (
-                    githubOrgData.length
+                  <div className="relative">
+                    <div className="w-full bg-gray-200 rounded-full h-8 relative overflow-hidden">
+                      {(() => {
+                        const first = githubRankingData[0]?.merchantCount || 0
+                        const second = githubRankingData[1]?.merchantCount || 0
+                        const total = first + second
+                        const firstPercentage = total > 0 ? (first / total) * 100 : 50
+                        const secondPercentage = total > 0 ? (second / total) * 100 : 50
+
+                        return (
+                          <>
+                            {/* First place segment */}
+                            <div
+                              className="bg-orange-600 h-8 absolute left-0 top-0 transition-all duration-500 flex items-center justify-center"
+                              style={{ width: `${firstPercentage}%` }}
+                            >
+                              <span className="text-white text-xs font-bold truncate px-1">
+                                {firstPercentage.toFixed(1)}%
+                              </span>
+                            </div>
+                            {/* Second place segment */}
+                            <div
+                              className="bg-orange-400 h-8 absolute right-0 top-0 transition-all duration-500 flex items-center justify-center"
+                              style={{ width: `${secondPercentage}%` }}
+                            >
+                              <span className="text-white text-xs font-bold truncate px-1">
+                                {secondPercentage.toFixed(1)}%
+                              </span>
+                            </div>
+                          </>
+                        )
+                      })()}
+                    </div>
+
+                    {/* Labels below the bar */}
+                    <div className="flex justify-between mt-2">
+                      <div className="text-sm font-medium text-orange-600 truncate max-w-[45%]">
+                        #{1} {githubRankingData[0]?.url_alias || "First"}
+                        <div className="text-xs text-muted-foreground">
+                          {(githubRankingData[0]?.merchantCount || 0).toLocaleString()} merchants
+                        </div>
+                      </div>
+                      <div className="text-sm font-medium text-orange-400 truncate max-w-[45%] text-right">
+                        #{2} {githubRankingData[1]?.url_alias || "Second"}
+                        <div className="text-xs text-muted-foreground">
+                          {(githubRankingData[1]?.merchantCount || 0).toLocaleString()} merchants
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-orange-600">
+                      {(
+                        ((githubRankingData[0]?.merchantCount || 0) / (githubRankingData[1]?.merchantCount || 1)) *
+                        100
+                      ).toFixed(1)}
+                      %
+                    </div>
+                    <div className="text-xs text-muted-foreground">dominance ratio</div>
+                  </div>
+                </div>
+              ) : activeTab === "global" && githubRankingData.length === 1 ? (
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600">100%</div>
+                  <p className="text-xs text-muted-foreground">
+                    {githubRankingData[0]?.url_alias || "Top"} leads globally
+                  </p>
+                </div>
+              ) : activeTab === "global" && (isLoading || githubRankingData.length === 0) ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                  <span className="text-sm">Loading...</span>
+                </div>
+              ) : (
+                <div className="text-2xl font-bold text-orange-600">
+                  {activeTab === "organizations" ? (
+                    githubOrgData.length > 0 ? (
+                      githubOrgData.length
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                        <span className="text-sm">Loading...</span>
+                      </div>
+                    )
+                  ) : activeTab === "countries" ? (
+                    githubCountryData.length > 0 ? (
+                      githubCountryData.length
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                        <span className="text-sm">Loading...</span>
+                      </div>
+                    )
+                  ) : githubCommunityData.length > 0 ? (
+                    githubCommunityData.length
                   ) : (
                     <div className="flex items-center gap-2">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
                       <span className="text-sm">Loading...</span>
                     </div>
-                  )
-                ) : activeTab === "countries" ? (
-                  githubCountryData.length > 0 ? (
-                    githubCountryData.length
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
-                      <span className="text-sm">Loading...</span>
-                    </div>
-                  )
-                ) : githubCommunityData.length > 0 ? (
-                  githubCommunityData.length
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
-                    <span className="text-sm">Loading...</span>
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {activeTab === "global" && githubRankingData.length >= 2
-                  ? `${githubRankingData[0]?.url_alias || "Top"} vs ${githubRankingData[1]?.url_alias || "Second"}`
-                  : activeTab === "global" && githubRankingData.length === 1
-                    ? `${githubRankingData[0]?.url_alias || "Top"} leads globally`
-                    : activeTab === "global" && (isLoading || githubRankingData.length === 0)
-                      ? "Calculating dominance..."
-                      : activeTab === "organizations"
-                        ? githubOrgData.length > 0
-                          ? "Active organizations"
-                          : "Loading organizations..."
-                        : activeTab === "countries"
-                          ? githubCountryData.length > 0
-                            ? "Total countries"
-                            : "Loading countries..."
-                          : githubCommunityData.length > 0
-                            ? "Active communities"
-                            : "Loading communities..."}
-              </p>
+                  )}
+                </div>
+              )}
+
+              {activeTab !== "global" && (
+                <p className="text-xs text-muted-foreground">
+                  {activeTab === "organizations"
+                    ? githubOrgData.length > 0
+                      ? "Active organizations"
+                      : "Loading organizations..."
+                    : activeTab === "countries"
+                      ? githubCountryData.length > 0
+                        ? "Total countries"
+                        : "Loading countries..."
+                      : githubCommunityData.length > 0
+                        ? "Active communities"
+                        : "Loading communities..."}
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
