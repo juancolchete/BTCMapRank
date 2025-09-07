@@ -242,6 +242,8 @@ export function BitcoinRankingDashboard() {
     Nigeria: "🇳🇬",
     Vietnam: "🇻🇳",
     "United States": "🇺🇸",
+    "United States of America": "🇺🇸",
+    USA: "🇺🇸",
     Ukraine: "🇺🇦",
     Indonesia: "🇮🇩",
     Brazil: "🇧🇷",
