@@ -550,6 +550,48 @@ export function BitcoinRankingDashboard() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Organization Distribution</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={
+                      githubOrgData.length > 0
+                        ? githubOrgData.slice(0, 5).map((org, index) => ({
+                            name: org.name.length > 15 ? org.name.substring(0, 15) + "..." : org.name,
+                            value: org.merchantCount,
+                            color: `hsl(${(index * 72) % 360}, 70%, 50%)`,
+                          }))
+                        : pieData
+                    }
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {(githubOrgData.length > 0
+                      ? githubOrgData.slice(0, 5).map((org, index) => ({
+                          name: org.name,
+                          value: org.merchantCount,
+                          color: `hsl(${(index * 72) % 360}, 70%, 50%)`,
+                        }))
+                      : pieData
+                    ).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Filters and Search */}
