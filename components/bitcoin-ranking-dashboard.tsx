@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { Search, Globe, Expand, BarChart3, Check, X } from "lucide-react"
+import { Search, Globe, Expand, BarChart3, Check, X, ExternalLink } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 // Mock data based on research findings
@@ -1060,9 +1060,34 @@ export function BitcoinRankingDashboard() {
                   Compare ({selectedItems.length})
                 </Button>
                 {selectedItems.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
-                    Clear Selection
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        selectedItems.forEach((item) => {
+                          let url = ""
+                          if (item.type === "country" && item.url_alias) {
+                            url = `https://btcmap.org/country/${item.url_alias}`
+                          } else if (item.type === "organization" && item.name) {
+                            url = `https://btcmap.org/communities/${encodeURIComponent(item.name)}`
+                          } else if (item.type === "community" && item.url_alias) {
+                            url = `https://btcmap.org/community/${item.url_alias}`
+                          }
+                          if (url) {
+                            window.open(url, "_blank")
+                          }
+                        })
+                      }}
+                      className="border-orange-600 text-orange-600 hover:bg-orange-50"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View on BTCMap
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
+                      Clear Selection
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -1167,9 +1192,34 @@ export function BitcoinRankingDashboard() {
                   Compare ({selectedItems.length})
                 </Button>
                 {selectedItems.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
-                    Clear Selection
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        selectedItems.forEach((item) => {
+                          let url = ""
+                          if (item.type === "country" && item.url_alias) {
+                            url = `https://btcmap.org/country/${item.url_alias}`
+                          } else if (item.type === "organization" && item.name) {
+                            url = `https://btcmap.org/communities/${encodeURIComponent(item.name)}`
+                          } else if (item.type === "community" && item.url_alias) {
+                            url = `https://btcmap.org/community/${item.url_alias}`
+                          }
+                          if (url) {
+                            window.open(url, "_blank")
+                          }
+                        })
+                      }}
+                      className="border-orange-600 text-orange-600 hover:bg-orange-50"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View on BTCMap
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
+                      Clear Selection
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -1263,9 +1313,34 @@ export function BitcoinRankingDashboard() {
                   Compare ({selectedItems.length})
                 </Button>
                 {selectedItems.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
-                    Clear Selection
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        selectedItems.forEach((item) => {
+                          let url = ""
+                          if (item.type === "country" && item.url_alias) {
+                            url = `https://btcmap.org/country/${item.url_alias}`
+                          } else if (item.type === "organization" && item.name) {
+                            url = `https://btcmap.org/communities/${encodeURIComponent(item.name)}`
+                          } else if (item.type === "community" && item.url_alias) {
+                            url = `https://btcmap.org/community/${item.url_alias}`
+                          }
+                          if (url) {
+                            window.open(url, "_blank")
+                          }
+                        })
+                      }}
+                      className="border-orange-600 text-orange-600 hover:bg-orange-50"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View on BTCMap
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
+                      Clear Selection
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -1379,9 +1454,36 @@ export function BitcoinRankingDashboard() {
                   Compare ({selectedItems.length})
                 </Button>
                 {selectedItems.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
-                    Clear Selection
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        selectedItems.forEach((item) => {
+                          let url = ""
+                          if (item.type === "country" && item.url_alias) {
+                            url = `https://btcmap.org/country/${item.url_alias}`
+                          } else if (item.type === "organization" && item.name) {
+                            url = `https://btcmap.org/communities/${encodeURIComponent(item.name)}`
+                          } else if (item.type === "community" && item.url_alias) {
+                            url = `https://btcmap.org/community/${item.url_alias}`
+                          } else if (item.url_alias) {
+                            url = `https://btcmap.org/community/${item.url_alias}`
+                          }
+                          if (url) {
+                            window.open(url, "_blank")
+                          }
+                        })
+                      }}
+                      className="border-orange-600 text-orange-600 hover:bg-orange-50"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View on BTCMap
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
+                      Clear Selection
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
