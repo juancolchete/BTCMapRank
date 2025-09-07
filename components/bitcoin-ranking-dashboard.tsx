@@ -258,6 +258,8 @@ export function BitcoinRankingDashboard() {
     Mexico: "🇲🇽",
     Argentina: "🇦🇷",
     "South Africa": "🇿🇦",
+    "El Salvador": "🇸🇻",
+    Czechia: "🇨🇿",
   }
 
   useEffect(() => {
