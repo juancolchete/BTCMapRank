@@ -1,5 +1,7 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -8,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { Search, Globe } from "lucide-react"
+import { Search, Globe, Expand } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 // Mock data based on research findings
 const countryData = [
@@ -538,18 +541,125 @@ export function BitcoinRankingDashboard() {
 
           <Card>
             <CardHeader>
-              <CardTitle>
+              <CardTitle className="flex items-center justify-between">
                 {activeTab === "global"
                   ? "Global Dominance"
                   : activeTab === "organizations"
                     ? "Organizations"
                     : activeTab === "countries"
-                      ? "Countries"
+                      ? "Country Dominance"
                       : "Communities"}
+                {(activeTab === "global" || activeTab === "countries") && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <Expand className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[90vh]">
+                      <DialogHeader>
+                        <DialogTitle>
+                          {activeTab === "global" ? "Global Dominance" : "Country Dominance"} - Full Screen
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="w-full h-[70vh] flex items-center justify-center">
+                        <div className="w-full max-w-2xl space-y-6">
+                          <div className="text-lg font-medium text-center text-muted-foreground">
+                            Merchant Count Distribution
+                          </div>
+                          <div className="relative">
+                            <div className="w-full bg-gray-200 rounded-full h-16 relative overflow-hidden">
+                              {(() => {
+                                const data = activeTab === "global" ? githubRankingData : githubCountryData
+                                const first = data[0]?.merchantCount || 0
+                                const second = data[1]?.merchantCount || 0
+                                const total = first + second
+                                const firstPercentage = total > 0 ? (first / total) * 100 : 50
+                                const secondPercentage = total > 0 ? (second / total) * 100 : 50
+
+                                return (
+                                  <>
+                                    <div
+                                      className="bg-orange-600 h-16 absolute left-0 top-0 transition-all duration-500 flex items-center justify-center"
+                                      style={{ width: `${firstPercentage}%` }}
+                                    >
+                                      <span
+                                        className="text-white text-xl font-bold px-2"
+                                        style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.7)" }}
+                                      >
+                                        {firstPercentage.toFixed(1)}%
+                                      </span>
+                                    </div>
+                                    <div
+                                      className="bg-orange-400 h-16 absolute top-0 transition-all duration-500 flex items-center justify-center"
+                                      style={{
+                                        left: `${firstPercentage}%`,
+                                        width: `${secondPercentage}%`,
+                                      }}
+                                    >
+                                      <span
+                                        className="text-white text-xl font-bold px-2"
+                                        style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.7)" }}
+                                      >
+                                        {secondPercentage.toFixed(1)}%
+                                      </span>
+                                    </div>
+                                  </>
+                                )
+                              })()}
+                            </div>
+                            <div className="flex justify-between mt-4">
+                              <div className="text-lg font-medium text-orange-600 flex-1 mr-4">
+                                #{1}{" "}
+                                {activeTab === "global"
+                                  ? githubRankingData[0]?.url_alias
+                                  : githubCountryData[0]?.name || "First"}
+                                <div className="text-sm text-muted-foreground">
+                                  {(
+                                    (activeTab === "global"
+                                      ? githubRankingData[0]?.merchantCount
+                                      : githubCountryData[0]?.merchantCount) || 0
+                                  ).toLocaleString()}{" "}
+                                  merchants
+                                </div>
+                              </div>
+                              <div className="text-lg font-medium text-orange-400 flex-1 ml-4 text-right">
+                                #{2}{" "}
+                                {activeTab === "global"
+                                  ? githubRankingData[1]?.url_alias
+                                  : githubCountryData[1]?.name || "Second"}
+                                <div className="text-sm text-muted-foreground">
+                                  {(
+                                    (activeTab === "global"
+                                      ? githubRankingData[1]?.merchantCount
+                                      : githubCountryData[1]?.merchantCount) || 0
+                                  ).toLocaleString()}{" "}
+                                  merchants
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-3xl font-bold text-orange-600">
+                              {(() => {
+                                const data = activeTab === "global" ? githubRankingData : githubCountryData
+                                const first = data[0]?.merchantCount || 0
+                                const second = data[1]?.merchantCount || 1
+                                return ((first / second) * 100).toFixed(1)
+                              })()}%
+                            </div>
+                            <div className="text-sm text-muted-foreground">dominance ratio</div>
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {activeTab === "global" && githubRankingData.length >= 2 ? (
+              {(activeTab === "global" && githubRankingData.length >= 2) ||
+              (activeTab === "countries" && githubCountryData.length >= 2) ? (
                 <div className="space-y-3">
                   <div className="text-sm font-medium text-center text-muted-foreground">
                     Merchant Count Distribution
@@ -557,8 +667,9 @@ export function BitcoinRankingDashboard() {
                   <div className="relative">
                     <div className="w-full bg-gray-200 rounded-full h-8 relative overflow-hidden">
                       {(() => {
-                        const first = githubRankingData[0]?.merchantCount || 0
-                        const second = githubRankingData[1]?.merchantCount || 0
+                        const data = activeTab === "global" ? githubRankingData : githubCountryData
+                        const first = data[0]?.merchantCount || 0
+                        const second = data[1]?.merchantCount || 0
                         const total = first + second
                         const firstPercentage = total > 0 ? (first / total) * 100 : 50
                         const secondPercentage = total > 0 ? (second / total) * 100 : 50
@@ -571,7 +682,7 @@ export function BitcoinRankingDashboard() {
                               style={{ width: `${firstPercentage}%` }}
                             >
                               <span
-                                className="text-white text-sm font-bold truncate px-1"
+                                className="text-white text-sm font-bold px-1"
                                 style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
                               >
                                 {firstPercentage.toFixed(1)}%
@@ -586,7 +697,7 @@ export function BitcoinRankingDashboard() {
                               }}
                             >
                               <span
-                                className="text-white text-sm font-bold truncate px-1"
+                                className="text-white text-sm font-bold px-1"
                                 style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
                               >
                                 {secondPercentage.toFixed(1)}%
@@ -600,38 +711,59 @@ export function BitcoinRankingDashboard() {
                     {/* Labels below the bar */}
                     <div className="flex justify-between mt-2">
                       <div className="text-sm font-medium text-orange-600 flex-1 mr-2">
-                        #{1} {githubRankingData[0]?.url_alias || "First"}
+                        #{1}{" "}
+                        {activeTab === "global"
+                          ? githubRankingData[0]?.url_alias
+                          : githubCountryData[0]?.name || "First"}
                         <div className="text-xs text-muted-foreground">
-                          {(githubRankingData[0]?.merchantCount || 0).toLocaleString()} merchants
+                          {(
+                            (activeTab === "global"
+                              ? githubRankingData[0]?.merchantCount
+                              : githubCountryData[0]?.merchantCount) || 0
+                          ).toLocaleString()}{" "}
+                          merchants
                         </div>
                       </div>
                       <div className="text-sm font-medium text-orange-400 flex-1 ml-2 text-right">
-                        #{2} {githubRankingData[1]?.url_alias || "Second"}
+                        #{2}{" "}
+                        {activeTab === "global"
+                          ? githubRankingData[1]?.url_alias
+                          : githubCountryData[1]?.name || "Second"}
                         <div className="text-xs text-muted-foreground">
-                          {(githubRankingData[1]?.merchantCount || 0).toLocaleString()} merchants
+                          {(
+                            (activeTab === "global"
+                              ? githubRankingData[1]?.merchantCount
+                              : githubCountryData[1]?.merchantCount) || 0
+                          ).toLocaleString()}{" "}
+                          merchants
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-bold text-orange-600">
-                      {(
-                        ((githubRankingData[0]?.merchantCount || 0) / (githubRankingData[1]?.merchantCount || 1)) *
-                        100
-                      ).toFixed(1)}
-                      %
+                      {(() => {
+                        const data = activeTab === "global" ? githubRankingData : githubCountryData
+                        const first = data[0]?.merchantCount || 0
+                        const second = data[1]?.merchantCount || 1
+                        return ((first / second) * 100).toFixed(1)
+                      })()}%
                     </div>
                     <div className="text-xs text-muted-foreground">dominance ratio</div>
                   </div>
                 </div>
-              ) : activeTab === "global" && githubRankingData.length === 1 ? (
+              ) : (activeTab === "global" && githubRankingData.length === 1) ||
+                (activeTab === "countries" && githubCountryData.length === 1) ? (
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-600">100%</div>
                   <p className="text-xs text-muted-foreground">
-                    {githubRankingData[0]?.url_alias || "Top"} leads globally
+                    {activeTab === "global" ? githubRankingData[0]?.url_alias : githubCountryData[0]?.name || "Top"}{" "}
+                    leads
                   </p>
                 </div>
-              ) : activeTab === "global" && (isLoading || githubRankingData.length === 0) ? (
+              ) : (activeTab === "global" || activeTab === "countries") &&
+                (isLoading ||
+                  (activeTab === "global" ? githubRankingData.length === 0 : githubCountryData.length === 0)) ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
                   <span className="text-sm">Loading...</span>
@@ -641,15 +773,6 @@ export function BitcoinRankingDashboard() {
                   {activeTab === "organizations" ? (
                     githubOrgData.length > 0 ? (
                       githubOrgData.length
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
-                        <span className="text-sm">Loading...</span>
-                      </div>
-                    )
-                  ) : activeTab === "countries" ? (
-                    githubCountryData.length > 0 ? (
-                      githubCountryData.length
                     ) : (
                       <div className="flex items-center gap-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
@@ -667,19 +790,15 @@ export function BitcoinRankingDashboard() {
                 </div>
               )}
 
-              {activeTab !== "global" && (
+              {activeTab !== "global" && activeTab !== "countries" && (
                 <p className="text-xs text-muted-foreground">
                   {activeTab === "organizations"
                     ? githubOrgData.length > 0
                       ? "Active organizations"
                       : "Loading organizations..."
-                    : activeTab === "countries"
-                      ? githubCountryData.length > 0
-                        ? "Total countries"
-                        : "Loading countries..."
-                      : githubCommunityData.length > 0
-                        ? "Active communities"
-                        : "Loading communities..."}
+                    : githubCommunityData.length > 0
+                      ? "Active communities"
+                      : "Loading communities..."}
                 </p>
               )}
             </CardContent>
@@ -689,7 +808,66 @@ export function BitcoinRankingDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Top Countries by Merchant Count</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Top Countries by Merchant Count
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Expand className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl max-h-[90vh]">
+                    <DialogHeader>
+                      <DialogTitle>Top Countries by Merchant Count - Full Screen</DialogTitle>
+                    </DialogHeader>
+                    <div className="w-full h-[70vh]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis
+                            dataKey="name"
+                            tick={{ fontSize: 12 }}
+                            angle={-45}
+                            textAnchor="end"
+                            height={60}
+                            interval={0}
+                          />
+                          <YAxis />
+                          <Tooltip
+                            formatter={(value: any, name: any, props: any) => [value.toLocaleString(), "Merchants"]}
+                            labelFormatter={(label: any, payload: any) => {
+                              if (payload && payload[0]) {
+                                return `${payload[0].payload.flag} ${payload[0].payload.name}`
+                              }
+                              return label
+                            }}
+                          />
+                          <Bar
+                            dataKey="merchants"
+                            fill="#ea580c"
+                            label={({ payload }) => {
+                              if (!payload || typeof payload.x === "undefined" || typeof payload.y === "undefined") {
+                                return null
+                              }
+                              return (
+                                <text
+                                  x={payload.x + (payload.width || 0) / 2}
+                                  y={payload.y + (payload.height || 0) / 2}
+                                  textAnchor="middle"
+                                  fontSize="32"
+                                  fill="white"
+                                >
+                                  {payload.flag || ""}
+                                </text>
+                              )
+                            }}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -733,7 +911,42 @@ export function BitcoinRankingDashboard() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Organization Distribution</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Organization Distribution
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Expand className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl max-h-[90vh]">
+                    <DialogHeader>
+                      <DialogTitle>Organization Distribution - Full Screen</DialogTitle>
+                    </DialogHeader>
+                    <div className="w-full h-[70vh]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={organizationChartData}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={150}
+                            fill="#8884d8"
+                            dataKey="value"
+                          >
+                            {organizationChartData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip formatter={(value: any) => [value.toLocaleString(), "Merchants"]} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
