@@ -293,8 +293,6 @@ export function BitcoinRankingDashboard() {
 
   useEffect(() => {
     const fetchOrgRanking = async () => {
-      if (activeTab !== "organizations") return
-
       setIsLoading(true)
       setError(null)
 
@@ -320,7 +318,7 @@ export function BitcoinRankingDashboard() {
     }
 
     fetchOrgRanking()
-  }, [activeTab])
+  }, []) // Removed activeTab dependency so it loads on component mount
 
   useEffect(() => {
     const fetchCommunityRanking = async () => {
