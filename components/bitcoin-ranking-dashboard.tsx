@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { Search, TrendingUp, Globe, Users } from "lucide-react"
+import { Search, TrendingUp, Globe } from "lucide-react"
 
 // Mock data based on research findings
 const countryData = [
@@ -270,8 +270,6 @@ export function BitcoinRankingDashboard() {
 
   useEffect(() => {
     const fetchCountryRanking = async () => {
-      if (activeTab !== "countries") return
-
       setIsLoading(true)
       setError(null)
 
@@ -297,7 +295,7 @@ export function BitcoinRankingDashboard() {
     }
 
     fetchCountryRanking()
-  }, [activeTab])
+  }, []) // Removed activeTab dependency so it loads on mount
 
   useEffect(() => {
     const fetchOrgRanking = async () => {
@@ -469,15 +467,24 @@ export function BitcoinRankingDashboard() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Top Country</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle>Top Country</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {countryData[0].flag} {countryData[0].name}
+                {githubCountryData.length > 0
+                  ? `🏆 ${githubCountryData[0].name}`
+                  : isLoading
+                    ? "Loading..."
+                    : `${countryData[0].flag} ${countryData[0].name}`}
               </div>
-              <p className="text-xs text-muted-foreground">{countryData[0].merchants.toLocaleString()} merchants</p>
+              <p className="text-xs text-muted-foreground">
+                {githubCountryData.length > 0
+                  ? `${githubCountryData[0].merchantCount.toLocaleString()} merchants`
+                  : isLoading
+                    ? "Fetching data..."
+                    : `${countryData[0].merchants.toLocaleString()} merchants`}
+              </p>
             </CardContent>
           </Card>
 
