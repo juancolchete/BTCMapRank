@@ -515,7 +515,7 @@ export function BitcoinRankingDashboard() {
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                  <XAxis dataKey="name" fontSize={10} angle={-45} textAnchor="end" height={60} interval={0} />
                   <YAxis />
                   <Tooltip />
                   <Bar dataKey="merchants" fill="#ea580c" />
