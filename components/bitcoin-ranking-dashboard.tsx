@@ -514,13 +514,22 @@ export default function BitcoinRankingDashboard() {
   }
 
   const removeFromComparison = (item: ComparisonItem) => {
-    // Fixed parameter type
     setSelectedItems((prev) =>
       prev.filter((selected) => {
-        if ("url_alias" in selected && "url_alias" in item) {
+        if ("url_alias" in selected && "url_alias" in item && selected.url_alias && item.url_alias) {
           return selected.url_alias !== item.url_alias
         }
-        return selected.name !== item.name
+        if (selected.type !== "global" && item.type !== "global") {
+          const selectedWithName = selected as
+            | GitHubCountryItemWithType
+            | GitHubOrgItemWithType
+            | GitHubCommunityItemWithType
+          const itemWithName = item as GitHubCountryItemWithType | GitHubOrgItemWithType | GitHubCommunityItemWithType
+          if (selectedWithName.name && itemWithName.name) {
+            return selectedWithName.name !== itemWithName.name
+          }
+        }
+        return true
       }),
     )
   }
