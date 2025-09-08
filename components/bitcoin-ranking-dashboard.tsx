@@ -6,7 +6,6 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 import { Search, Globe, Expand, BarChart3, Check, X } from "lucide-react"
@@ -504,7 +503,7 @@ export function BitcoinRankingDashboard() {
 
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Merchants</CardTitle>
@@ -543,6 +542,22 @@ export function BitcoinRankingDashboard() {
                     ? "Fetching data..."
                     : `${countryData[0].merchants.toLocaleString()} merchants`}
               </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>BTC MAP</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="w-full h-24 rounded-lg overflow-hidden bg-gray-900">
+                <img
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-7unmagPtmLaEWtjpUDu6aNf0GcDUWP.png"
+                  alt="BTC Map showing global Bitcoin merchant distribution"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">Global merchant distribution</p>
             </CardContent>
           </Card>
 
@@ -1026,16 +1041,20 @@ export function BitcoinRankingDashboard() {
             />
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-40">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="merchants">Merchants</SelectItem>
-                <SelectItem value="growth">Growth Rate</SelectItem>
-                <SelectItem value="adoption">Adoption Rate</SelectItem>
-              </SelectContent>
-            </Select>
+            {selectedItems.length > 0 && (
+              <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
+                Clear Selection
+              </Button>
+            )}
+            <Button
+              variant={showComparison ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowComparison(!showComparison)}
+              className="bg-orange-600 hover:bg-orange-700 text-white w-full sm:w-40"
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Compare ({selectedItems.length})
+            </Button>
           </div>
         </div>
 
@@ -1401,25 +1420,6 @@ export function BitcoinRankingDashboard() {
           </TabsContent>
 
           <TabsContent value="global" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={showComparison ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowComparison(!showComparison)}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Compare ({selectedItems.length})
-                </Button>
-                {selectedItems.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
-                    Clear Selection
-                  </Button>
-                )}
-              </div>
-            </div>
-
             {isLoading && (
               <div className="text-center py-8">
                 <div className="text-lg">Loading global ranking data...</div>
