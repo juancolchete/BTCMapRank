@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 import { Search, Globe, Expand, BarChart3, X, ExternalLink } from "lucide-react"
 
 // Mock data based on research findings
@@ -652,7 +652,7 @@ export default function BitcoinRankingDashboard() {
           {/* Dynamic Card */}
           <Card>
             <CardHeader>
-              <CardTitle>
+              <CardTitle className="flex items-center justify-between">
                 {activeTab === "global"
                   ? "Global Dominance"
                   : activeTab === "organizations"
@@ -660,11 +660,142 @@ export default function BitcoinRankingDashboard() {
                     : activeTab === "countries"
                       ? "Country Dominance"
                       : "Communities"}
+                {(activeTab === "global" || activeTab === "countries") && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFullScreenChart("dominance")}
+                    className="h-8 w-8 p-0 flex-shrink-0"
+                  >
+                    <Expand className="h-4 w-4" />
+                  </Button>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-600">
-                {activeTab === "organizations" ? (
+                {activeTab === "global" ? (
+                  githubRankingData.length >= 2 ? (
+                    (() => {
+                      const first = githubRankingData[0]
+                      const second = githubRankingData[1]
+                      const dominanceRatio = ((first.merchantCount / second.merchantCount) * 100).toFixed(1)
+                      const firstPercentage = (
+                        (first.merchantCount / (first.merchantCount + second.merchantCount)) *
+                        100
+                      ).toFixed(1)
+                      const secondPercentage = (
+                        (second.merchantCount / (first.merchantCount + second.merchantCount)) *
+                        100
+                      ).toFixed(1)
+
+                      return (
+                        <div className="space-y-3">
+                          <div className="text-lg">{dominanceRatio}%</div>
+                          <div className="w-full bg-gray-200 rounded-full h-8 flex overflow-hidden">
+                            <div
+                              className="bg-orange-600 flex items-center justify-center text-white text-sm font-bold"
+                              style={{
+                                width: `${firstPercentage}%`,
+                                backgroundColor: "#c2410c !important",
+                              }}
+                            >
+                              <span
+                                className="text-white text-sm font-bold"
+                                style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
+                              >
+                                {firstPercentage}%
+                              </span>
+                            </div>
+                            <div
+                              className="bg-orange-400 flex items-center justify-center text-white text-sm font-bold"
+                              style={{
+                                width: `${secondPercentage}%`,
+                                backgroundColor: "#9a3412 !important",
+                              }}
+                            >
+                              <span
+                                className="text-white text-sm font-bold"
+                                style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
+                              >
+                                {secondPercentage}%
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {first.url_alias} vs {second.url_alias}
+                          </div>
+                        </div>
+                      )
+                    })()
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                      <span className="text-sm">Loading...</span>
+                    </div>
+                  )
+                ) : activeTab === "countries" ? (
+                  githubCountryData.length >= 2 ? (
+                    (() => {
+                      const first = githubCountryData[0]
+                      const second = githubCountryData[1]
+                      const dominanceRatio = ((first.merchantCount / second.merchantCount) * 100).toFixed(1)
+                      const firstPercentage = (
+                        (first.merchantCount / (first.merchantCount + second.merchantCount)) *
+                        100
+                      ).toFixed(1)
+                      const secondPercentage = (
+                        (second.merchantCount / (first.merchantCount + second.merchantCount)) *
+                        100
+                      ).toFixed(1)
+
+                      return (
+                        <div className="space-y-3">
+                          <div className="text-lg">{dominanceRatio}%</div>
+                          <div className="w-full bg-gray-200 rounded-full h-8 flex overflow-hidden">
+                            <div
+                              className="bg-orange-600 flex items-center justify-center text-white text-sm font-bold"
+                              style={{
+                                width: `${firstPercentage}%`,
+                                backgroundColor: "#c2410c !important",
+                              }}
+                            >
+                              <span
+                                className="text-white text-sm font-bold"
+                                style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
+                              >
+                                {firstPercentage}%
+                              </span>
+                            </div>
+                            <div
+                              className="bg-orange-400 flex items-center justify-center text-white text-sm font-bold"
+                              style={{
+                                width: `${secondPercentage}%`,
+                                backgroundColor: "#9a3412 !important",
+                              }}
+                            >
+                              <span
+                                className="text-white text-sm font-bold"
+                                style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
+                              >
+                                {secondPercentage}%
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {countryFlagMap[first.name] || "🏳️"} {first.name} vs {countryFlagMap[second.name] || "🏳️"}{" "}
+                            {second.name}
+                          </div>
+                        </div>
+                      )
+                    })()
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                      <span className="text-sm">Loading...</span>
+                    </div>
+                  )
+                ) : activeTab === "organizations" ? (
                   githubOrgData.length > 0 ? (
                     githubOrgData.length
                   ) : (
@@ -682,14 +813,14 @@ export default function BitcoinRankingDashboard() {
                   </div>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">
-                {activeTab === "organizations"
-                  ? githubOrgData.length > 0
-                    ? "Active organizations"
-                    : "Loading organizations..."
-                  : githubCommunityData.length > 0
-                    ? "Active communities"
-                    : "Loading communities..."}
+              <p className="text-xs text-muted-foreground mt-2">
+                {activeTab === "global"
+                  ? "Dominance ratio of top location"
+                  : activeTab === "countries"
+                    ? "Dominance ratio of top country"
+                    : activeTab === "organizations"
+                      ? "Total organizations"
+                      : "Total communities"}
               </p>
             </CardContent>
           </Card>
@@ -1038,6 +1169,236 @@ export default function BitcoinRankingDashboard() {
           </div>
         )}
       </div>
+
+      {/* Full Screen Modals */}
+      {fullScreenChart === "countries" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-6xl h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-bold">Top Countries by Merchant Count</h2>
+              <Button variant="ghost" size="sm" onClick={() => setFullScreenChart(null)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex-1 p-6">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" tick={false} axisLine={false} />
+                  <YAxis tick={{ fontSize: 14 }} />
+                  <Tooltip />
+                  <Bar
+                    dataKey="merchants"
+                    label={({ payload, x, y, width, height }) => {
+                      if (!payload || !x || !y || !width || !height) return <text />
+                      return (
+                        <text
+                          x={x + width / 2}
+                          y={y + height / 2}
+                          fill="white"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fontSize="24"
+                        >
+                          {payload.flag}
+                        </text>
+                      )
+                    }}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill="url(#flagPattern)" />
+                    ))}
+                  </Bar>
+                  <defs>
+                    <pattern id="flagPattern" patternUnits="userSpaceOnUse" width="100%" height="100%">
+                      <rect width="100%" height="100%" fill="#ea580c" fillOpacity="0.8" />
+                    </pattern>
+                  </defs>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {fullScreenChart === "organizations" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-bold">Organization Distribution</h2>
+              <Button variant="ghost" size="sm" onClick={() => setFullScreenChart(null)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex-1 p-6 flex justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={organizationChartData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={150}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {organizationChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {fullScreenChart === "dominance" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-bold">{activeTab === "global" ? "Global Dominance" : "Country Dominance"}</h2>
+              <Button variant="ghost" size="sm" onClick={() => setFullScreenChart(null)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex-1 p-6 flex items-center justify-center">
+              <div className="w-full max-w-2xl space-y-6">
+                {activeTab === "global" && githubRankingData.length >= 2 ? (
+                  (() => {
+                    const first = githubRankingData[0]
+                    const second = githubRankingData[1]
+                    const dominanceRatio = ((first.merchantCount / second.merchantCount) * 100).toFixed(1)
+                    const firstPercentage = (
+                      (first.merchantCount / (first.merchantCount + second.merchantCount)) *
+                      100
+                    ).toFixed(1)
+                    const secondPercentage = (
+                      (second.merchantCount / (first.merchantCount + second.merchantCount)) *
+                      100
+                    ).toFixed(1)
+
+                    return (
+                      <div className="space-y-6">
+                        <div className="text-center">
+                          <div className="text-6xl font-bold text-orange-600 mb-2">{dominanceRatio}%</div>
+                          <div className="text-lg text-muted-foreground">Dominance Ratio</div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-16 flex overflow-hidden">
+                          <div
+                            className="bg-orange-600 flex items-center justify-center text-white text-lg font-bold"
+                            style={{
+                              width: `${firstPercentage}%`,
+                              backgroundColor: "#c2410c !important",
+                            }}
+                          >
+                            <span
+                              className="text-white text-lg font-bold"
+                              style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+                            >
+                              {firstPercentage}%
+                            </span>
+                          </div>
+                          <div
+                            className="bg-orange-400 flex items-center justify-center text-white text-lg font-bold"
+                            style={{
+                              width: `${secondPercentage}%`,
+                              backgroundColor: "#9a3412 !important",
+                            }}
+                          >
+                            <span
+                              className="text-white text-lg font-bold"
+                              style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+                            >
+                              {secondPercentage}%
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-center text-lg text-muted-foreground">
+                          <div className="font-semibold">{first.url_alias}</div>
+                          <div className="text-sm">{first.merchantCount.toLocaleString()} merchants</div>
+                          <div className="my-2">vs</div>
+                          <div className="font-semibold">{second.url_alias}</div>
+                          <div className="text-sm">{second.merchantCount.toLocaleString()} merchants</div>
+                        </div>
+                      </div>
+                    )
+                  })()
+                ) : activeTab === "countries" && githubCountryData.length >= 2 ? (
+                  (() => {
+                    const first = githubCountryData[0]
+                    const second = githubCountryData[1]
+                    const dominanceRatio = ((first.merchantCount / second.merchantCount) * 100).toFixed(1)
+                    const firstPercentage = (
+                      (first.merchantCount / (first.merchantCount + second.merchantCount)) *
+                      100
+                    ).toFixed(1)
+                    const secondPercentage = (
+                      (second.merchantCount / (first.merchantCount + second.merchantCount)) *
+                      100
+                    ).toFixed(1)
+
+                    return (
+                      <div className="space-y-6">
+                        <div className="text-center">
+                          <div className="text-6xl font-bold text-orange-600 mb-2">{dominanceRatio}%</div>
+                          <div className="text-lg text-muted-foreground">Country Dominance Ratio</div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-16 flex overflow-hidden">
+                          <div
+                            className="bg-orange-600 flex items-center justify-center text-white text-lg font-bold"
+                            style={{
+                              width: `${firstPercentage}%`,
+                              backgroundColor: "#c2410c !important",
+                            }}
+                          >
+                            <span
+                              className="text-white text-lg font-bold"
+                              style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+                            >
+                              {firstPercentage}%
+                            </span>
+                          </div>
+                          <div
+                            className="bg-orange-400 flex items-center justify-center text-white text-lg font-bold"
+                            style={{
+                              width: `${secondPercentage}%`,
+                              backgroundColor: "#9a3412 !important",
+                            }}
+                          >
+                            <span
+                              className="text-white text-lg font-bold"
+                              style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+                            >
+                              {secondPercentage}%
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-center text-lg text-muted-foreground">
+                          <div className="font-semibold">
+                            {countryFlagMap[first.name] || "🏳️"} {first.name}
+                          </div>
+                          <div className="text-sm">{first.merchantCount.toLocaleString()} merchants</div>
+                          <div className="my-2">vs</div>
+                          <div className="font-semibold">
+                            {countryFlagMap[second.name] || "🏳️"} {second.name}
+                          </div>
+                          <div className="text-sm">{second.merchantCount.toLocaleString()} merchants</div>
+                        </div>
+                      </div>
+                    )
+                  })()
+                ) : (
+                  <div className="text-center">
+                    <div className="text-lg text-muted-foreground">Loading dominance data...</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
