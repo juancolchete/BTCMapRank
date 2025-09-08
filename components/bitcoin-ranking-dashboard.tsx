@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { Button } from "@/components/ui/button"
 
 import { useState, useEffect } from "react"
@@ -542,6 +544,36 @@ export default function BitcoinRankingDashboard() {
     })
   }
 
+  const isItemSelected = (item: any, itemType: string) => {
+    return selectedItems.some((selected) => {
+      return selected.merchantCount === item.merchantCount && selected.type === itemType
+    })
+  }
+
+  const handleItemClick = (item: any, itemType: string, event: React.MouseEvent) => {
+    if (event.ctrlKey || event.metaKey) {
+      // Ctrl+Click opens BTCMap
+      let url = ""
+      if (itemType === "country" && item.url_alias) {
+        url = `https://btcmap.org/country/${item.url_alias}`
+      } else if (itemType === "organization" && item.name) {
+        url = `https://btcmap.org/communities/${encodeURIComponent(item.name)}`
+      } else if (itemType === "community" && item.url_alias) {
+        url = `https://btcmap.org/community/${item.url_alias}`
+      }
+      if (url) {
+        window.open(url, "_blank")
+      }
+    } else {
+      // Regular click adds to comparison
+      if (isItemSelected(item, itemType)) {
+        removeFromComparison({ ...item, type: itemType })
+      } else {
+        addToComparison(item, itemType)
+      }
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -779,7 +811,13 @@ export default function BitcoinRankingDashboard() {
           <TabsContent value="countries" className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {githubCountryData.map((country, index) => (
-                <Card key={index} className="hover:bg-muted/50 transition-colors cursor-pointer">
+                <Card
+                  key={index}
+                  className={`hover:bg-muted/50 transition-colors cursor-pointer ${
+                    isItemSelected(country, "country") ? "ring-2 ring-orange-500 bg-orange-50" : ""
+                  }`}
+                  onClick={(e) => handleItemClick(country, "country", e)}
+                >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -791,6 +829,11 @@ export default function BitcoinRankingDashboard() {
                           <p className="text-sm text-muted-foreground">
                             Population: {(country.population || 0).toLocaleString()}
                           </p>
+                          {country.url_alias && (
+                            <Badge variant="secondary" className="text-xs mt-1">
+                              View on BTCMap
+                            </Badge>
+                          )}
                         </div>
                       </div>
                       <div className="text-right">
@@ -798,6 +841,9 @@ export default function BitcoinRankingDashboard() {
                           {(country.merchantCount || 0).toLocaleString()}
                         </div>
                         <div className="text-sm text-muted-foreground">merchants</div>
+                        {isItemSelected(country, "country") && (
+                          <div className="text-xs text-orange-600 mt-1">✓ Selected</div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -809,7 +855,13 @@ export default function BitcoinRankingDashboard() {
           <TabsContent value="organizations" className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {githubOrgData.map((org, index) => (
-                <Card key={index} className="hover:bg-muted/50 transition-colors cursor-pointer">
+                <Card
+                  key={index}
+                  className={`hover:bg-muted/50 transition-colors cursor-pointer ${
+                    isItemSelected(org, "organization") ? "ring-2 ring-orange-500 bg-orange-50" : ""
+                  }`}
+                  onClick={(e) => handleItemClick(org, "organization", e)}
+                >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -818,6 +870,9 @@ export default function BitcoinRankingDashboard() {
                         </Badge>
                         <div>
                           <h3 className="font-semibold text-lg">{org.name}</h3>
+                          <Badge variant="secondary" className="text-xs mt-1">
+                            View on BTCMap
+                          </Badge>
                         </div>
                       </div>
                       <div className="text-right">
@@ -825,6 +880,9 @@ export default function BitcoinRankingDashboard() {
                           {(org.merchantCount || 0).toLocaleString()}
                         </div>
                         <div className="text-sm text-muted-foreground">merchants</div>
+                        {isItemSelected(org, "organization") && (
+                          <div className="text-xs text-orange-600 mt-1">✓ Selected</div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -853,7 +911,13 @@ export default function BitcoinRankingDashboard() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {githubCommunityData.map((community, index) => (
-                  <Card key={index} className="hover:bg-muted/50 transition-colors cursor-pointer">
+                  <Card
+                    key={index}
+                    className={`hover:bg-muted/50 transition-colors cursor-pointer ${
+                      isItemSelected(community, "community") ? "ring-2 ring-orange-500 bg-orange-50" : ""
+                    }`}
+                    onClick={(e) => handleItemClick(community, "community", e)}
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -862,6 +926,11 @@ export default function BitcoinRankingDashboard() {
                           </Badge>
                           <div>
                             <h3 className="font-semibold text-lg">{community.name}</h3>
+                            {community.url_alias && (
+                              <Badge variant="secondary" className="text-xs mt-1">
+                                View on BTCMap
+                              </Badge>
+                            )}
                           </div>
                         </div>
                         <div className="text-right">
@@ -869,6 +938,9 @@ export default function BitcoinRankingDashboard() {
                             {(community.merchantCount || 0).toLocaleString()}
                           </div>
                           <div className="text-sm text-muted-foreground">merchants</div>
+                          {isItemSelected(community, "community") && (
+                            <div className="text-xs text-orange-600 mt-1">✓ Selected</div>
+                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -881,7 +953,13 @@ export default function BitcoinRankingDashboard() {
           <TabsContent value="global" className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {githubRankingData.map((item, index) => (
-                <Card key={index} className="hover:bg-muted/50 transition-colors cursor-pointer">
+                <Card
+                  key={index}
+                  className={`hover:bg-muted/50 transition-colors cursor-pointer ${
+                    isItemSelected(item, "global") ? "ring-2 ring-orange-500 bg-orange-50" : ""
+                  }`}
+                  onClick={(e) => handleItemClick(item, "global", e)}
+                >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -890,6 +968,11 @@ export default function BitcoinRankingDashboard() {
                         </Badge>
                         <div>
                           <h3 className="font-semibold text-lg">{item.url_alias || "Unknown Location"}</h3>
+                          {item.url_alias && (
+                            <Badge variant="secondary" className="text-xs mt-1">
+                              View on BTCMap
+                            </Badge>
+                          )}
                         </div>
                       </div>
                       <div className="text-right">
@@ -897,6 +980,9 @@ export default function BitcoinRankingDashboard() {
                           {(item.merchantCount || 0).toLocaleString()}
                         </div>
                         <div className="text-sm text-muted-foreground">merchants</div>
+                        {isItemSelected(item, "global") && (
+                          <div className="text-xs text-orange-600 mt-1">✓ Selected</div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -934,9 +1020,20 @@ export default function BitcoinRankingDashboard() {
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className="text-xs sm:text-sm font-medium">{item.merchantCount?.toLocaleString()}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFromComparison(item)}
+                      className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
               ))}
+            </div>
+            <div className="mt-3 pt-3 border-t text-xs text-muted-foreground">
+              Click items to select/deselect • Ctrl+Click to open BTCMap
             </div>
           </div>
         )}
