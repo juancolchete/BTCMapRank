@@ -226,9 +226,10 @@ interface GitHubCommunityItem {
   url_alias?: string
 }
 
-export function BitcoinRankingDashboard() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState("merchants")
+type ComparisonItem = GitHubRankingItem | GitHubCountryItem | GitHubOrgItem | GitHubCommunityItem
+
+export { BitcoinRankingDashboard }
+export default function BitcoinRankingDashboard() {
   const [activeTab, setActiveTab] = useState("countries")
   const [githubRankingData, setGithubRankingData] = useState<GitHubRankingItem[]>([])
   const [githubCountryData, setGithubCountryData] = useState<GitHubCountryItem[]>([])
@@ -236,9 +237,11 @@ export function BitcoinRankingDashboard() {
   const [githubCommunityData, setGithubCommunityData] = useState<GitHubCommunityItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [selectedItems, setSelectedItems] = useState<any[]>([])
+  const [selectedItems, setSelectedItems] = useState<ComparisonItem[]>([]) // Fixed type from any[] to ComparisonItem[]
   const [showComparison, setShowComparison] = useState(false)
   const [fullScreenChart, setFullScreenChart] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [sortBy, setSortBy] = useState("merchants")
 
   const countryFlagMap: { [key: string]: string } = {
     India: "🇮🇳",
@@ -493,9 +496,15 @@ export function BitcoinRankingDashboard() {
     })
   }
 
-  const removeFromComparison = (item: any) => {
+  const removeFromComparison = (item: ComparisonItem) => {
+    // Fixed parameter type
     setSelectedItems((prev) =>
-      prev.filter((selected) => selected.name !== item.name && selected.url_alias !== item.url_alias),
+      prev.filter((selected) => {
+        if ("url_alias" in selected && "url_alias" in item) {
+          return selected.url_alias !== item.url_alias
+        }
+        return selected.name !== item.name
+      }),
     )
   }
 
@@ -891,8 +900,16 @@ export function BitcoinRankingDashboard() {
                     />
                     <Bar
                       dataKey="merchants"
-                      label={({ payload, x, y, width, height }) => {
-                        if (!payload || !x || !y || !width || !height) return null
+                      label={({ payload, x, y, width, height }: any) => {
+                        // Added explicit any type for chart props
+                        if (
+                          !payload ||
+                          typeof x !== "number" ||
+                          typeof y !== "number" ||
+                          typeof width !== "number" ||
+                          typeof height !== "number"
+                        )
+                          return <text />
                         return (
                           <text
                             x={x + width / 2}
@@ -906,9 +923,17 @@ export function BitcoinRankingDashboard() {
                           </text>
                         )
                       }}
-                      shape={({ payload, ...props }) => {
+                      shape={({ payload, ...props }: any) => {
+                        // Added explicit any type for shape props
                         if (!payload) return null
                         const { x, y, width, height } = props
+                        if (
+                          typeof x !== "number" ||
+                          typeof y !== "number" ||
+                          typeof width !== "number" ||
+                          typeof height !== "number"
+                        )
+                          return null
                         return (
                           <g>
                             <rect

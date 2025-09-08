@@ -1,4 +1,4 @@
-import { BitcoinRankingDashboard } from "@/components/bitcoin-ranking-dashboard"
+import BitcoinRankingDashboard from "@/components/bitcoin-ranking-dashboard"
 
 export default function Home() {
   return (
