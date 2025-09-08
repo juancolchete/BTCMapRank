@@ -504,7 +504,7 @@ export function BitcoinRankingDashboard() {
 
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Merchants</CardTitle>
@@ -812,7 +812,8 @@ export function BitcoinRankingDashboard() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -1013,20 +1014,20 @@ export function BitcoinRankingDashboard() {
           </Card>
         </div>
 
-        {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-2 w-full md:w-auto">
+        {/* Search and Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Search className="h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search countries or organizations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-80"
+              className="w-full sm:w-80"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-full sm:w-40">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
@@ -1040,11 +1041,19 @@ export function BitcoinRankingDashboard() {
 
         {/* Rankings Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="countries">Countries</TabsTrigger>
-            <TabsTrigger value="organizations">Organizations</TabsTrigger>
-            <TabsTrigger value="communities">Communities</TabsTrigger>
-            <TabsTrigger value="global">Global</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
+            <TabsTrigger value="countries" className="text-xs sm:text-sm">
+              Countries
+            </TabsTrigger>
+            <TabsTrigger value="organizations" className="text-xs sm:text-sm">
+              Organizations
+            </TabsTrigger>
+            <TabsTrigger value="communities" className="text-xs sm:text-sm">
+              Communities
+            </TabsTrigger>
+            <TabsTrigger value="global" className="text-xs sm:text-sm">
+              Global
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="countries" className="space-y-4">
@@ -1456,30 +1465,30 @@ export function BitcoinRankingDashboard() {
       </div>
 
       {showComparison && selectedItems.length > 0 && (
-        <div className="fixed bottom-6 right-6 bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-md z-50">
+        <div className="fixed bottom-4 left-4 right-4 sm:bottom-6 sm:right-6 sm:left-auto bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-full sm:max-w-md z-50">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-lg">Compare Rankings</h3>
+            <h3 className="font-semibold text-base sm:text-lg">Compare Rankings</h3>
             <Button variant="ghost" size="sm" onClick={() => setShowComparison(false)}>
               <X className="h-4 w-4" />
             </Button>
           </div>
 
-          <div className="space-y-3 max-h-64 overflow-y-auto">
+          <div className="space-y-3 max-h-48 sm:max-h-64 overflow-y-auto">
             {selectedItems.map((item, index) => (
               <div
                 key={`${item.type}-${item.name || item.url_alias}`}
-                className="flex items-center justify-between p-2 bg-orange-50 rounded"
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-2 bg-orange-50 rounded gap-2"
               >
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <Badge variant="outline" className="text-xs flex-shrink-0">
                     #{item.rank || index + 1}
                   </Badge>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-xs flex-shrink-0">
                     {item.type}
                   </Badge>
-                  <span className="font-medium text-sm">{item.name || item.url_alias}</span>
+                  <span className="font-medium text-sm truncate">{item.name || item.url_alias}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between sm:justify-end gap-2">
                   <span className="text-sm font-bold text-orange-600">
                     {(item.merchantCount || 0).toLocaleString()}
                   </span>
@@ -1491,6 +1500,7 @@ export function BitcoinRankingDashboard() {
                         prev.filter((selected) => selected.name !== item.name && selected.url_alias !== item.url_alias),
                       )
                     }
+                    className="h-6 w-6 p-0"
                   >
                     <X className="h-3 w-3" />
                   </Button>
