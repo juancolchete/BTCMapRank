@@ -516,20 +516,13 @@ export default function BitcoinRankingDashboard() {
   const removeFromComparison = (item: ComparisonItem) => {
     setSelectedItems((prev) =>
       prev.filter((selected) => {
+        // Compare by url_alias if both items have it
         if ("url_alias" in selected && "url_alias" in item && selected.url_alias && item.url_alias) {
           return selected.url_alias !== item.url_alias
         }
-        if (selected.type !== "global" && item.type !== "global") {
-          const selectedWithName = selected as
-            | GitHubCountryItemWithType
-            | GitHubOrgItemWithType
-            | GitHubCommunityItemWithType
-          const itemWithName = item as GitHubCountryItemWithType | GitHubOrgItemWithType | GitHubCommunityItemWithType
-          if (selectedWithName.name && itemWithName.name) {
-            return selectedWithName.name !== itemWithName.name
-          }
-        }
-        return true
+
+        // Compare by merchantCount and type as fallback to avoid name property issues
+        return selected.merchantCount !== item.merchantCount || selected.type !== item.type
       }),
     )
   }
@@ -538,12 +531,12 @@ export default function BitcoinRankingDashboard() {
     const itemWithType = { ...item, type: itemType }
     setSelectedItems((prev) => {
       if (prev.length >= 5) return prev
+
       const exists = prev.some((selected) => {
-        if ("url_alias" in selected && "url_alias" in itemWithType) {
-          return selected.url_alias === itemWithType.url_alias
-        }
-        return selected.name === itemWithType.name
+        // Compare by merchantCount and type only to avoid property access issues
+        return selected.merchantCount === itemWithType.merchantCount && selected.type === itemWithType.type
       })
+
       if (exists) return prev
       return [...prev, itemWithType]
     })
