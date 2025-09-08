@@ -918,7 +918,7 @@ export default function BitcoinRankingDashboard() {
             <div className="space-y-2 sm:space-y-3">
               {selectedItems.map((item, index) => (
                 <div
-                  key={`${item.type}-${item.name || ("url_alias" in item ? item.url_alias : "")}`}
+                  key={`${item.type}-${index}-${item.merchantCount}`}
                   className="flex items-center justify-between p-2 bg-orange-50 rounded text-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -929,7 +929,7 @@ export default function BitcoinRankingDashboard() {
                       {item.type}
                     </Badge>
                     <span className="truncate text-xs sm:text-sm">
-                      {item.name || ("url_alias" in item ? item.url_alias : "")}
+                      {"name" in item && item.name ? item.name : "url_alias" in item ? item.url_alias : "Unknown"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
