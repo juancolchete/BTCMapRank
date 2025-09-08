@@ -1119,38 +1119,41 @@ export function BitcoinRankingDashboard() {
                         }
                       }}
                     >
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Badge variant="outline" className="text-lg px-3 py-1">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                            <Badge variant="outline" className="text-sm sm:text-lg px-2 py-1 sm:px-3 flex-shrink-0">
                               #{country.rank}
                             </Badge>
                             {isSelected && (
-                              <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                              <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
                                 <Check className="h-3 w-3 text-white" />
                               </div>
                             )}
-                            <div className="flex items-center gap-2">
-                              <span className="text-2xl">{countryFlagMap[country.name] || "🏳️"}</span>
-                              <div>
-                                <h3 className="font-semibold text-lg">{country.name}</h3>
-                                <p className="text-sm text-muted-foreground">
-                                  Population: {(country.population || 0).toLocaleString()}
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                              <span className="text-xl sm:text-2xl flex-shrink-0">
+                                {countryFlagMap[country.name] || "🏳️"}
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-semibold text-base sm:text-lg truncate">{country.name}</h3>
+                                <p className="text-xs sm:text-sm text-muted-foreground">
+                                  Pop: {(country.population || 0).toLocaleString()}
                                 </p>
                               </div>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-orange-600">
+                          <div className="text-left sm:text-right flex-shrink-0">
+                            <div className="text-xl sm:text-2xl font-bold text-orange-600">
                               {(country.merchantCount || 0).toLocaleString()}
                             </div>
-                            <div className="text-sm text-muted-foreground">merchants</div>
-                            <div className="text-sm font-medium text-orange-600">
+                            <div className="text-xs sm:text-sm text-muted-foreground">merchants</div>
+                            <div className="text-xs sm:text-sm font-medium text-orange-600">
                               {(((country.merchantCount / country.population) * 1000) / 10).toFixed(5)}%
                             </div>
                             {country.url_alias && (
                               <Badge variant="secondary" className="mt-1 text-xs">
-                                View on BTCMap (Ctrl+Click)
+                                <span className="hidden sm:inline">View on BTCMap (Ctrl+Click)</span>
+                                <span className="sm:hidden">BTCMap</span>
                               </Badge>
                             )}
                           </div>
@@ -1339,29 +1342,30 @@ export function BitcoinRankingDashboard() {
                           }
                         }}
                       >
-                        <CardContent className="p-6">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <Badge variant="outline" className="text-lg px-3 py-1">
+                        <CardContent className="p-4 sm:p-6">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                              <Badge variant="outline" className="text-sm sm:text-lg px-2 py-1 sm:px-3 flex-shrink-0">
                                 #{community.rank}
                               </Badge>
                               {isSelected && (
-                                <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                                <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
                                   <Check className="h-3 w-3 text-white" />
                                 </div>
                               )}
-                              <div>
-                                <h3 className="font-semibold text-lg">{community.name}</h3>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-semibold text-base sm:text-lg truncate">{community.name}</h3>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <div className="text-2xl font-bold text-orange-600">
+                            <div className="text-left sm:text-right flex-shrink-0">
+                              <div className="text-xl sm:text-2xl font-bold text-orange-600">
                                 {(community.merchantCount || 0).toLocaleString()}
                               </div>
-                              <div className="text-sm text-muted-foreground">merchants</div>
+                              <div className="text-xs sm:text-sm text-muted-foreground">merchants</div>
                               {community.url_alias && (
                                 <Badge variant="secondary" className="mt-1 text-xs">
-                                  View on BTCMap (Ctrl+Click)
+                                  <span className="hidden sm:inline">View on BTCMap (Ctrl+Click)</span>
+                                  <span className="sm:hidden">BTCMap</span>
                                 </Badge>
                               )}
                             </div>
