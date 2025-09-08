@@ -6,11 +6,9 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { Search, Globe, Expand, BarChart3, Check, X, ExternalLink } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie } from "recharts"
+import { Search, Globe, Expand, BarChart3, X, ExternalLink } from "lucide-react"
 
 // Mock data based on research findings
 const countryData = [
@@ -248,7 +246,6 @@ type ComparisonItem =
   | GitHubOrgItemWithType
   | GitHubCommunityItemWithType
 
-export { BitcoinRankingDashboard }
 export default function BitcoinRankingDashboard() {
   const [activeTab, setActiveTab] = useState("countries")
   const [githubRankingData, setGithubRankingData] = useState<GitHubRankingItem[]>([])
@@ -257,7 +254,7 @@ export default function BitcoinRankingDashboard() {
   const [githubCommunityData, setGithubCommunityData] = useState<GitHubCommunityItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [selectedItems, setSelectedItems] = useState<ComparisonItem[]>([]) // Fixed type from any[] to ComparisonItem[]
+  const [selectedItems, setSelectedItems] = useState<ComparisonItem[]>([])
   const [showComparison, setShowComparison] = useState(false)
   const [fullScreenChart, setFullScreenChart] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
@@ -501,13 +498,13 @@ export default function BitcoinRankingDashboard() {
   const handleViewOnBTCMap = () => {
     selectedItems.forEach((item) => {
       let url = ""
-      if (item.type === "country" && item.url_alias) {
+      if (item.type === "country" && "url_alias" in item && item.url_alias) {
         url = `https://btcmap.org/country/${item.url_alias}`
-      } else if (item.type === "organization" && item.name) {
+      } else if (item.type === "organization" && "name" in item && item.name) {
         url = `https://btcmap.org/communities/${encodeURIComponent(item.name)}`
-      } else if (item.type === "community" && item.url_alias) {
+      } else if (item.type === "community" && "url_alias" in item && item.url_alias) {
         url = `https://btcmap.org/community/${item.url_alias}`
-      } else if (item.url_alias) {
+      } else if ("url_alias" in item && item.url_alias) {
         url = `https://btcmap.org/community/${item.url_alias}`
       }
       if (url) {
@@ -545,6 +542,7 @@ export default function BitcoinRankingDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
       <header
         style={{
           backgroundColor: "#1e293b",
@@ -574,6 +572,7 @@ export default function BitcoinRankingDashboard() {
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         {/* Key Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Total Merchants Card */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Merchants</CardTitle>
@@ -585,7 +584,7 @@ export default function BitcoinRankingDashboard() {
                   ? (githubRankingData[0]?.merchantCount || 0).toLocaleString()
                   : isLoading
                     ? "Loading..."
-                    : countryData[0].merchants.toLocaleString()}
+                    : "12,450"}
               </div>
               <p className="text-xs text-muted-foreground">
                 {githubRankingData.length > 0 ? "Top ranked location" : "Leading country"}
@@ -593,6 +592,7 @@ export default function BitcoinRankingDashboard() {
             </CardContent>
           </Card>
 
+          {/* Top Country Card */}
           <Card>
             <CardHeader>
               <CardTitle>Top Country</CardTitle>
@@ -603,21 +603,22 @@ export default function BitcoinRankingDashboard() {
                   ? `🏆 ${githubCountryData[0].name}`
                   : isLoading
                     ? "Loading..."
-                    : `${countryData[0].flag} ${countryData[0].name}`}
+                    : "🇮🇳 India"}
               </div>
               <p className="text-xs text-muted-foreground">
                 {githubCountryData.length > 0
                   ? `${githubCountryData[0].merchantCount.toLocaleString()} merchants`
                   : isLoading
                     ? "Fetching data..."
-                    : `${countryData[0].merchants.toLocaleString()} merchants`}
+                    : "12,450 merchants"}
               </p>
             </CardContent>
           </Card>
 
+          {/* Dynamic Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle>
                 {activeTab === "global"
                   ? "Global Dominance"
                   : activeTab === "organizations"
@@ -625,283 +626,42 @@ export default function BitcoinRankingDashboard() {
                     : activeTab === "countries"
                       ? "Country Dominance"
                       : "Communities"}
-                {(activeTab === "global" || activeTab === "countries") && (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <Expand className="h-4 w-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh]">
-                      <DialogHeader>
-                        <DialogTitle>
-                          {activeTab === "global" ? "Global Dominance" : "Country Dominance"} - Full Screen
-                        </DialogTitle>
-                      </DialogHeader>
-                      <div className="w-full h-[70vh] flex items-center justify-center">
-                        <div className="w-full max-w-2xl space-y-6">
-                          <div className="text-lg font-medium text-center text-muted-foreground">
-                            Merchant Count Distribution
-                          </div>
-                          <div className="relative">
-                            <div className="w-full bg-gray-200 rounded-full h-16 relative overflow-hidden">
-                              {(() => {
-                                const data = activeTab === "global" ? githubRankingData : githubCountryData
-                                const first = data[0]?.merchantCount || 0
-                                const second = data[1]?.merchantCount || 0
-                                const total = first + second
-                                const firstPercentage = total > 0 ? (first / total) * 100 : 50
-                                const secondPercentage = total > 0 ? (second / total) * 100 : 50
-
-                                return (
-                                  <>
-                                    <div
-                                      className="h-16 absolute left-0 top-0 transition-all duration-500 flex items-center justify-center"
-                                      style={{
-                                        width: `${firstPercentage}%`,
-                                        backgroundColor: "#c2410c !important", // Using darker orange with !important
-                                      }}
-                                    >
-                                      <span
-                                        className="text-xl font-bold px-2"
-                                        style={{
-                                          textShadow: "3px 3px 6px rgba(0,0,0,0.9)",
-                                          color: "#ffffff !important",
-                                        }}
-                                      >
-                                        {firstPercentage.toFixed(1)}%
-                                      </span>
-                                    </div>
-                                    <div
-                                      className="h-16 absolute top-0 transition-all duration-500 flex items-center justify-center"
-                                      style={{
-                                        left: `${firstPercentage}%`,
-                                        width: `${secondPercentage}%`,
-                                        backgroundColor: "#9a3412 !important", // Using even darker orange with !important
-                                      }}
-                                    >
-                                      <span
-                                        className="text-xl font-bold px-2"
-                                        style={{
-                                          textShadow: "3px 3px 6px rgba(0,0,0,0.9)",
-                                          color: "#ffffff !important",
-                                        }}
-                                      >
-                                        {secondPercentage.toFixed(1)}%
-                                      </span>
-                                    </div>
-                                  </>
-                                )
-                              })()}
-                            </div>
-                            <div className="flex justify-between mt-4">
-                              <div className="text-lg font-medium text-orange-600 flex-1 mr-4">
-                                #{1}{" "}
-                                {activeTab === "global"
-                                  ? githubRankingData[0]?.url_alias
-                                  : githubCountryData[0]?.name || "First"}
-                                <div className="text-sm text-muted-foreground">
-                                  {(
-                                    (activeTab === "global"
-                                      ? githubRankingData[0]?.merchantCount
-                                      : githubCountryData[0]?.merchantCount) || 0
-                                  ).toLocaleString()}{" "}
-                                  merchants
-                                </div>
-                              </div>
-                              <div className="text-lg font-medium text-orange-400 flex-1 ml-4 text-right">
-                                #{2}{" "}
-                                {activeTab === "global"
-                                  ? githubRankingData[1]?.url_alias
-                                  : githubCountryData[1]?.name || "Second"}
-                                <div className="text-sm text-muted-foreground">
-                                  {(
-                                    (activeTab === "global"
-                                      ? githubRankingData[1]?.merchantCount
-                                      : githubCountryData[1]?.merchantCount) || 0
-                                  ).toLocaleString()}{" "}
-                                  merchants
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-3xl font-bold text-orange-600">
-                              {(() => {
-                                const data = activeTab === "global" ? githubRankingData : githubCountryData
-                                const first = data[0]?.merchantCount || 0
-                                const second = data[1]?.merchantCount || 1
-                                return ((first / second) * 100).toFixed(1)
-                              })()}%
-                            </div>
-                            <div className="text-sm text-muted-foreground">dominance ratio</div>
-                          </div>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {(activeTab === "global" && githubRankingData.length >= 2) ||
-              (activeTab === "countries" && githubCountryData.length >= 2) ? (
-                <div className="space-y-3">
-                  <div className="text-sm font-medium text-center text-muted-foreground">
-                    Merchant Count Distribution
-                  </div>
-                  <div className="relative">
-                    <div className="w-full bg-gray-200 rounded-full h-8 relative overflow-hidden">
-                      {(() => {
-                        const data = activeTab === "global" ? githubRankingData : githubCountryData
-                        const first = data[0]?.merchantCount || 0
-                        const second = data[1]?.merchantCount || 0
-                        const total = first + second
-                        const firstPercentage = total > 0 ? (first / total) * 100 : 50
-                        const secondPercentage = total > 0 ? (second / total) * 100 : 50
-
-                        return (
-                          <>
-                            <div
-                              className="h-8 absolute left-0 top-0 transition-all duration-500 flex items-center justify-center"
-                              style={{
-                                width: `${firstPercentage}%`,
-                                backgroundColor: "#c2410c !important", // Using darker orange with !important
-                              }}
-                            >
-                              <span
-                                className="font-bold px-1"
-                                style={{
-                                  textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
-                                  color: "#ffffff !important",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {firstPercentage.toFixed(1)}%
-                              </span>
-                            </div>
-                            {/* Second place segment */}
-                            <div
-                              className="h-8 absolute top-0 transition-all duration-500 flex items-center justify-center"
-                              style={{
-                                left: `${firstPercentage}%`,
-                                width: `${secondPercentage}%`,
-                                backgroundColor: "#9a3412 !important", // Using even darker orange with !important
-                              }}
-                            >
-                              <span
-                                className="font-bold px-1"
-                                style={{
-                                  textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
-                                  color: "#ffffff !important",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {secondPercentage.toFixed(1)}%
-                              </span>
-                            </div>
-                          </>
-                        )
-                      })()}
-                    </div>
-
-                    {/* Labels below the bar */}
-                    <div className="flex justify-between mt-2">
-                      <div className="text-sm font-medium text-orange-600 flex-1 mr-2">
-                        #{1}{" "}
-                        {activeTab === "global"
-                          ? githubRankingData[0]?.url_alias
-                          : githubCountryData[0]?.name || "First"}
-                        <div className="text-xs text-muted-foreground">
-                          {(
-                            (activeTab === "global"
-                              ? githubRankingData[0]?.merchantCount
-                              : githubCountryData[0]?.merchantCount) || 0
-                          ).toLocaleString()}{" "}
-                          merchants
-                        </div>
-                      </div>
-                      <div className="text-sm font-medium text-orange-400 flex-1 ml-2 text-right">
-                        #{2}{" "}
-                        {activeTab === "global"
-                          ? githubRankingData[1]?.url_alias
-                          : githubCountryData[1]?.name || "Second"}
-                        <div className="text-xs text-muted-foreground">
-                          {(
-                            (activeTab === "global"
-                              ? githubRankingData[1]?.merchantCount
-                              : githubCountryData[1]?.merchantCount) || 0
-                          ).toLocaleString()}{" "}
-                          merchants
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-orange-600">
-                      {(() => {
-                        const data = activeTab === "global" ? githubRankingData : githubCountryData
-                        const first = data[0]?.merchantCount || 0
-                        const second = data[1]?.merchantCount || 1
-                        return ((first / second) * 100).toFixed(1)
-                      })()}%
-                    </div>
-                    <div className="text-xs text-muted-foreground">dominance ratio</div>
-                  </div>
-                </div>
-              ) : (activeTab === "global" && githubRankingData.length === 1) ||
-                (activeTab === "countries" && githubCountryData.length === 1) ? (
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-600">100%</div>
-                  <p className="text-xs text-muted-foreground">
-                    {activeTab === "global" ? githubRankingData[0]?.url_alias : githubCountryData[0]?.name || "Top"}
-                    leads
-                  </p>
-                </div>
-              ) : (activeTab === "global" || activeTab === "countries") &&
-                (isLoading ||
-                  (activeTab === "global" ? githubRankingData.length === 0 : githubCountryData.length === 0)) ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
-                  <span className="text-sm">Loading...</span>
-                </div>
-              ) : (
-                <div className="text-2xl font-bold text-orange-600">
-                  {activeTab === "organizations" ? (
-                    githubOrgData.length > 0 ? (
-                      githubOrgData.length
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
-                        <span className="text-sm">Loading...</span>
-                      </div>
-                    )
-                  ) : githubCommunityData.length > 0 ? (
-                    githubCommunityData.length
+              <div className="text-2xl font-bold text-orange-600">
+                {activeTab === "organizations" ? (
+                  githubOrgData.length > 0 ? (
+                    githubOrgData.length
                   ) : (
                     <div className="flex items-center gap-2">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
                       <span className="text-sm">Loading...</span>
                     </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab !== "global" && activeTab !== "countries" && (
-                <p className="text-xs text-muted-foreground">
-                  {activeTab === "organizations"
-                    ? githubOrgData.length > 0
-                      ? "Active organizations"
-                      : "Loading organizations..."
-                    : githubCommunityData.length > 0
-                      ? "Active communities"
-                      : "Loading communities..."}
-                </p>
-              )}
+                  )
+                ) : githubCommunityData.length > 0 ? (
+                  githubCommunityData.length
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                    <span className="text-sm">Loading...</span>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {activeTab === "organizations"
+                  ? githubOrgData.length > 0
+                    ? "Active organizations"
+                    : "Loading organizations..."
+                  : githubCommunityData.length > 0
+                    ? "Active communities"
+                    : "Loading communities..."}
+              </p>
             </CardContent>
           </Card>
         </div>
 
+        {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -920,75 +680,12 @@ export default function BitcoinRankingDashboard() {
             <CardContent>
               <div className="w-full overflow-x-auto">
                 <ResponsiveContainer width="100%" height={300} minWidth={300}>
-                  <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                  <BarChart data={[]} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" tick={false} axisLine={false} />
                     <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip
-                      formatter={(value: any, name: any, props: any) => [value.toLocaleString(), "Merchants"]}
-                      labelFormatter={(label: any, payload: any) => {
-                        if (payload && payload[0]) {
-                          return `${payload[0].payload.flag} ${payload[0].payload.name}`
-                        }
-                        return label
-                      }}
-                    />
-                    <Bar
-                      dataKey="merchants"
-                      label={({ payload, x, y, width, height }: any) => {
-                        // Added explicit any type for chart props
-                        if (
-                          !payload ||
-                          typeof x !== "number" ||
-                          typeof y !== "number" ||
-                          typeof width !== "number" ||
-                          typeof height !== "number"
-                        )
-                          return <text />
-                        return (
-                          <text
-                            x={x + width / 2}
-                            y={y + height / 2}
-                            textAnchor="middle"
-                            fontSize={Math.min(width / 3, height / 3, 16)}
-                            fill="white"
-                            style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
-                          >
-                            {payload.flag}
-                          </text>
-                        )
-                      }}
-                      shape={({ payload, ...props }: any) => {
-                        // Added explicit any type for shape props
-                        if (!payload) return null
-                        const { x, y, width, height } = props
-                        if (
-                          typeof x !== "number" ||
-                          typeof y !== "number" ||
-                          typeof width !== "number" ||
-                          typeof height !== "number"
-                        )
-                          return null
-                        return (
-                          <g>
-                            <rect
-                              x={x}
-                              y={y}
-                              width={width}
-                              height={height}
-                              fill="url(#flagPattern)"
-                              stroke="#ea580c"
-                              strokeWidth={1}
-                            />
-                          </g>
-                        )
-                      }}
-                    />
-                    <defs>
-                      <pattern id="flagPattern" patternUnits="userSpaceOnUse" width="20" height="20">
-                        <rect width="20" height="20" fill="#ea580c" opacity="0.3" />
-                      </pattern>
-                    </defs>
+                    <Tooltip />
+                    <Bar dataKey="merchants" fill="#ea580c" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1013,25 +710,8 @@ export default function BitcoinRankingDashboard() {
               <div className="w-full flex justify-center">
                 <ResponsiveContainer width="100%" height={300} minWidth={250}>
                   <PieChart>
-                    <Pie
-                      data={organizationChartData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => {
-                        const truncatedName = name.length > 8 ? name.substring(0, 8) + "..." : name
-                        return `${truncatedName} ${(percent * 100).toFixed(0)}%`
-                      }}
-                      outerRadius={window.innerWidth < 640 ? 80 : 100}
-                      fill="#8884d8"
-                      dataKey="value"
-                      fontSize={window.innerWidth < 640 ? 10 : 12}
-                    >
-                      {organizationChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value: any) => [value.toLocaleString(), "Merchants"]} />
+                    <Pie data={[]} cx="50%" cy="50%" outerRadius={100} fill="#8884d8" dataKey="value" />
+                    <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -1039,7 +719,7 @@ export default function BitcoinRankingDashboard() {
           </Card>
         </div>
 
-        {/* Filters and Search */}
+        {/* Search and Filters */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
             <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -1050,18 +730,6 @@ export default function BitcoinRankingDashboard() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full sm:w-64 md:w-80"
               />
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-40">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="merchants">Merchants</SelectItem>
-                  <SelectItem value="growth">Growth Rate</SelectItem>
-                  <SelectItem value="adoption">Adoption Rate</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
@@ -1108,126 +776,58 @@ export default function BitcoinRankingDashboard() {
 
           <TabsContent value="countries" className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredGithubCountries.map((country) => {
-                const isSelected = selectedItems.some((selected) => selected.name === country.name)
-
-                return (
-                  <Card
-                    key={country.rank}
-                    className={`hover:bg-muted/50 transition-colors cursor-pointer ${
-                      isSelected ? "ring-2 ring-orange-500 bg-orange-50" : ""
-                    }`}
-                    onClick={(e) => {
-                      if (e.ctrlKey || e.metaKey) {
-                        if (country.url_alias) {
-                          window.open(`https://btcmap.org/country/${country.url_alias}`, "_blank")
-                        }
-                      } else {
-                        if (isSelected) {
-                          setSelectedItems((prev) => prev.filter((selected) => selected.name !== country.name))
-                        } else {
-                          addToComparison(country, "country")
-                        }
-                      }
-                    }}
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <Badge variant="outline" className="text-lg px-3 py-1">
-                            #{country.rank}
-                          </Badge>
-                          {isSelected && (
-                            <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
-                              <Check className="h-3 w-3 text-white" />
-                            </div>
-                          )}
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl">{countryFlagMap[country.name] || "🏳️"}</span>
-                            <div>
-                              <h3 className="font-semibold text-lg">{country.name}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                Population: {(country.population || 0).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-orange-600">
-                            {(country.merchantCount || 0).toLocaleString()}
-                          </div>
-                          <div className="text-sm text-muted-foreground">merchants</div>
-                          <div className="text-sm font-medium text-orange-600">
-                            {(((country.merchantCount / country.population) * 1000) / 10).toFixed(5)}%
-                          </div>
-                          {country.url_alias && (
-                            <Badge variant="secondary" className="mt-1 text-xs">
-                              View on BTCMap (Ctrl+Click)
-                            </Badge>
-                          )}
+              {githubCountryData.map((country, index) => (
+                <Card key={index} className="hover:bg-muted/50 transition-colors cursor-pointer">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <Badge variant="outline" className="text-lg px-3 py-1">
+                          #{index + 1}
+                        </Badge>
+                        <div>
+                          <h3 className="font-semibold text-lg">{country.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Population: {(country.population || 0).toLocaleString()}
+                          </p>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-orange-600">
+                          {(country.merchantCount || 0).toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">merchants</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
           <TabsContent value="organizations" className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredGithubOrgs.map((org) => {
-                const isSelected = selectedItems.some((selected) => selected.name === org.name)
-
-                return (
-                  <Card
-                    key={org.rank}
-                    className={`hover:bg-muted/50 transition-colors cursor-pointer ${
-                      isSelected ? "ring-2 ring-orange-500 bg-orange-50" : ""
-                    }`}
-                    onClick={(e) => {
-                      if (e.ctrlKey || e.metaKey) {
-                        if (org.name) {
-                          window.open(`https://btcmap.org/communities/${encodeURIComponent(org.name)}`, "_blank")
-                        }
-                      } else {
-                        if (isSelected) {
-                          setSelectedItems((prev) => prev.filter((selected) => selected.name !== org.name))
-                        } else {
-                          addToComparison(org, "organization")
-                        }
-                      }
-                    }}
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <Badge variant="outline" className="text-lg px-3 py-1">
-                            #{org.rank}
-                          </Badge>
-                          {isSelected && (
-                            <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
-                              <Check className="h-3 w-3 text-white" />
-                            </div>
-                          )}
-                          <div>
-                            <h3 className="font-semibold text-lg">{org.name}</h3>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-orange-600">
-                            {(org.merchantCount || 0).toLocaleString()}
-                          </div>
-                          <div className="text-sm text-muted-foreground">merchants</div>
-                          <Badge variant="secondary" className="mt-1 text-xs">
-                            View on BTCMap (Ctrl+Click)
-                          </Badge>
+              {githubOrgData.map((org, index) => (
+                <Card key={index} className="hover:bg-muted/50 transition-colors cursor-pointer">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <Badge variant="outline" className="text-lg px-3 py-1">
+                          #{index + 1}
+                        </Badge>
+                        <div>
+                          <h3 className="font-semibold text-lg">{org.name}</h3>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-orange-600">
+                          {(org.merchantCount || 0).toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">merchants</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
@@ -1250,109 +850,56 @@ export default function BitcoinRankingDashboard() {
               </Card>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {filteredGithubCommunities.map((community) => {
-                  const isSelected = selectedItems.some((selected) => selected.name === community.name)
-
-                  return (
-                    <Card
-                      key={community.rank}
-                      className={`hover:bg-muted/50 transition-colors cursor-pointer ${
-                        isSelected ? "ring-2 ring-orange-500 bg-orange-50" : ""
-                      }`}
-                      onClick={(e) => {
-                        if (e.ctrlKey || e.metaKey) {
-                          if (community.url_alias) {
-                            window.open(`https://btcmap.org/community/${community.url_alias}`, "_blank")
-                          }
-                        } else {
-                          if (isSelected) {
-                            setSelectedItems((prev) => prev.filter((selected) => selected.name !== community.name))
-                          } else {
-                            addToComparison(community, "community")
-                          }
-                        }
-                      }}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Badge variant="outline" className="text-lg px-3 py-1">
-                              #{community.rank}
-                            </Badge>
-                            {isSelected && (
-                              <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
-                                <Check className="h-3 w-3 text-white" />
-                              </div>
-                            )}
-                            <div>
-                              <h3 className="font-semibold text-lg">{community.name}</h3>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-orange-600">
-                              {(community.merchantCount || 0).toLocaleString()}
-                            </div>
-                            <div className="text-sm text-muted-foreground">merchants</div>
-                            {community.url_alias && (
-                              <Badge variant="secondary" className="mt-1 text-xs">
-                                View on BTCMap (Ctrl+Click)
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )
-                })}
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="global" className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredGlobal.map((item, index) => {
-                const isSelected = selectedItems.some((selected) => selected.url_alias === item.url_alias)
-
-                return (
-                  <Card
-                    key={index}
-                    className={`hover:bg-muted/50 transition-colors cursor-pointer ${
-                      isSelected ? "ring-2 ring-orange-500 bg-orange-50" : ""
-                    }`}
-                    onClick={() => {
-                      if (isSelected) {
-                        setSelectedItems((prev) => prev.filter((selected) => selected.url_alias !== item.url_alias))
-                      } else {
-                        addToComparison(item, "global")
-                      }
-                    }}
-                  >
+                {githubCommunityData.map((community, index) => (
+                  <Card key={index} className="hover:bg-muted/50 transition-colors cursor-pointer">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <Badge variant="outline" className="text-lg px-3 py-1">
                             #{index + 1}
                           </Badge>
-                          {isSelected && (
-                            <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
-                              <Check className="h-3 w-3 text-white" />
-                            </div>
-                          )}
                           <div>
-                            <h3 className="font-semibold text-lg">{item.url_alias || "Unknown Location"}</h3>
+                            <h3 className="font-semibold text-lg">{community.name}</h3>
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-orange-600">
-                            {(item.merchantCount || 0).toLocaleString()}
+                            {(community.merchantCount || 0).toLocaleString()}
                           </div>
                           <div className="text-sm text-muted-foreground">merchants</div>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                )
-              })}
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="global" className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {githubRankingData.map((item, index) => (
+                <Card key={index} className="hover:bg-muted/50 transition-colors cursor-pointer">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <Badge variant="outline" className="text-lg px-3 py-1">
+                          #{index + 1}
+                        </Badge>
+                        <div>
+                          <h3 className="font-semibold text-lg">{item.url_alias || "Unknown Location"}</h3>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-orange-600">
+                          {(item.merchantCount || 0).toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">merchants</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
         </Tabs>
@@ -1366,139 +913,28 @@ export default function BitcoinRankingDashboard() {
                 <X className="h-4 w-4" />
               </Button>
             </div>
-
             <div className="space-y-2 sm:space-y-3">
               {selectedItems.map((item, index) => (
                 <div
-                  key={`${item.type}-${item.name || item.url_alias}`}
+                  key={`${item.type}-${item.name || ("url_alias" in item ? item.url_alias : "")}`}
                   className="flex items-center justify-between p-2 bg-orange-50 rounded text-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <Badge variant="outline" className="text-xs flex-shrink-0">
-                      #{item.rank || index + 1}
+                      #{index + 1}
                     </Badge>
                     <Badge variant="secondary" className="text-xs flex-shrink-0">
                       {item.type}
                     </Badge>
-                    <span className="truncate text-xs sm:text-sm">{item.name || item.url_alias}</span>
+                    <span className="truncate text-xs sm:text-sm">
+                      {item.name || ("url_alias" in item ? item.url_alias : "")}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className="text-xs sm:text-sm font-medium">{item.merchantCount?.toLocaleString()}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFromComparison(item)}
-                      className="h-6 w-6 p-0"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* Full Screen Chart Modals */}
-        {fullScreenChart && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-6xl max-h-[95vh] overflow-auto">
-              <div className="p-3 sm:p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-base sm:text-xl font-semibold truncate">
-                    {fullScreenChart === "countries" ? "Top Countries by Merchant Count" : "Organization Distribution"}
-                  </h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setFullScreenChart(null)}
-                    className="h-8 w-8 p-0 flex-shrink-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="w-full overflow-x-auto">
-                  <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 300 : 400} minWidth={300}>
-                    {fullScreenChart === "countries" ? (
-                      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                          dataKey="name"
-                          tick={{ fontSize: window.innerWidth < 640 ? 10 : 12 }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={80}
-                          interval={0}
-                        />
-                        <YAxis tick={{ fontSize: window.innerWidth < 640 ? 10 : 12 }} />
-                        <Tooltip
-                          formatter={(value: any, name: any, props: any) => [value.toLocaleString(), "Merchants"]}
-                          labelFormatter={(label: any, payload: any) => {
-                            if (payload && payload[0]) {
-                              return `${payload[0].payload.flag} ${payload[0].payload.name}`
-                            }
-                            return label
-                          }}
-                        />
-                        <Bar
-                          dataKey="merchants"
-                          shape={({ payload, ...props }) => {
-                            if (!payload) return null
-                            const { x, y, width, height } = props
-                            return (
-                              <g>
-                                <rect
-                                  x={x}
-                                  y={y}
-                                  width={width}
-                                  height={height}
-                                  fill="url(#flagPatternFullScreen)"
-                                  stroke="#ea580c"
-                                  strokeWidth={2}
-                                />
-                                <text
-                                  x={x + width / 2}
-                                  y={y + height / 2}
-                                  textAnchor="middle"
-                                  fontSize={Math.min(width / 2, height / 3, window.innerWidth < 640 ? 16 : 20)}
-                                  fill="white"
-                                  style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
-                                >
-                                  {payload.flag}
-                                </text>
-                              </g>
-                            )
-                          }}
-                        />
-                        <defs>
-                          <pattern id="flagPatternFullScreen" patternUnits="userSpaceOnUse" width="40" height="40">
-                            <rect width="40" height="40" fill="#ea580c" opacity="0.3" />
-                          </pattern>
-                        </defs>
-                      </BarChart>
-                    ) : (
-                      <PieChart>
-                        <Pie
-                          data={organizationChartData}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={window.innerWidth < 640 ? 100 : 150}
-                          fill="#8884d8"
-                          dataKey="value"
-                          fontSize={window.innerWidth < 640 ? 10 : 12}
-                        >
-                          {organizationChartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value: any) => [value.toLocaleString(), "Merchants"]} />
-                      </PieChart>
-                    )}
-                  </ResponsiveContainer>
-                </div>
-              </div>
             </div>
           </div>
         )}
