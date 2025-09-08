@@ -1119,39 +1119,45 @@ export function BitcoinRankingDashboard() {
                         }
                       }}
                     >
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                            <Badge variant="outline" className="text-sm sm:text-lg px-2 py-1 sm:px-3 flex-shrink-0">
+                      <CardContent className="p-3 sm:p-6">
+                        <div className="flex items-start justify-between gap-3 w-full">
+                          {/* Left side - Rank, selection, flag, and name */}
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <Badge
+                              variant="outline"
+                              className="text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 sm:py-1 flex-shrink-0"
+                            >
                               #{country.rank}
                             </Badge>
                             {isSelected && (
-                              <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <Check className="h-3 w-3 text-white" />
+                              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <Check className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
                               </div>
                             )}
-                            <div className="flex items-center gap-2 min-w-0 flex-1">
-                              <span className="text-xl sm:text-2xl flex-shrink-0">
-                                {countryFlagMap[country.name] || "🏳️"}
-                              </span>
-                              <div className="min-w-0 flex-1">
-                                <h3 className="font-semibold text-base sm:text-lg truncate">{country.name}</h3>
-                                <p className="text-xs sm:text-sm text-muted-foreground">
-                                  Pop: {(country.population || 0).toLocaleString()}
-                                </p>
-                              </div>
+                            <span className="text-lg sm:text-xl flex-shrink-0">
+                              {countryFlagMap[country.name] || "🏳️"}
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-semibold text-sm sm:text-lg leading-tight break-words">
+                                {country.name}
+                              </h3>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Pop: {(country.population || 0).toLocaleString()}
+                              </p>
                             </div>
                           </div>
-                          <div className="text-left sm:text-right flex-shrink-0">
-                            <div className="text-xl sm:text-2xl font-bold text-orange-600">
+
+                          {/* Right side - Merchant count and badges */}
+                          <div className="text-right flex-shrink-0">
+                            <div className="text-lg sm:text-2xl font-bold text-orange-600 leading-tight">
                               {(country.merchantCount || 0).toLocaleString()}
                             </div>
-                            <div className="text-xs sm:text-sm text-muted-foreground">merchants</div>
-                            <div className="text-xs sm:text-sm font-medium text-orange-600">
+                            <div className="text-xs text-muted-foreground">merchants</div>
+                            <div className="text-xs font-medium text-orange-600 mt-0.5">
                               {(((country.merchantCount / country.population) * 1000) / 10).toFixed(5)}%
                             </div>
                             {country.url_alias && (
-                              <Badge variant="secondary" className="mt-1 text-xs">
+                              <Badge variant="secondary" className="mt-1 text-xs px-1.5 py-0.5">
                                 <span className="hidden sm:inline">View on BTCMap (Ctrl+Click)</span>
                                 <span className="sm:hidden">BTCMap</span>
                               </Badge>
@@ -1342,28 +1348,36 @@ export function BitcoinRankingDashboard() {
                           }
                         }}
                       >
-                        <CardContent className="p-4 sm:p-6">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                              <Badge variant="outline" className="text-sm sm:text-lg px-2 py-1 sm:px-3 flex-shrink-0">
+                        <CardContent className="p-3 sm:p-6">
+                          <div className="flex items-start justify-between gap-3 w-full">
+                            {/* Left side - Rank, selection, and name */}
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                              <Badge
+                                variant="outline"
+                                className="text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 sm:py-1 flex-shrink-0"
+                              >
                                 #{community.rank}
                               </Badge>
                               {isSelected && (
-                                <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                  <Check className="h-3 w-3 text-white" />
+                                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <Check className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
                                 </div>
                               )}
                               <div className="min-w-0 flex-1">
-                                <h3 className="font-semibold text-base sm:text-lg truncate">{community.name}</h3>
+                                <h3 className="font-semibold text-sm sm:text-lg leading-tight break-words">
+                                  {community.name}
+                                </h3>
                               </div>
                             </div>
-                            <div className="text-left sm:text-right flex-shrink-0">
-                              <div className="text-xl sm:text-2xl font-bold text-orange-600">
+
+                            {/* Right side - Merchant count and badges */}
+                            <div className="text-right flex-shrink-0">
+                              <div className="text-lg sm:text-2xl font-bold text-orange-600 leading-tight">
                                 {(community.merchantCount || 0).toLocaleString()}
                               </div>
-                              <div className="text-xs sm:text-sm text-muted-foreground">merchants</div>
+                              <div className="text-xs text-muted-foreground">merchants</div>
                               {community.url_alias && (
-                                <Badge variant="secondary" className="mt-1 text-xs">
+                                <Badge variant="secondary" className="mt-1 text-xs px-1.5 py-0.5">
                                   <span className="hidden sm:inline">View on BTCMap (Ctrl+Click)</span>
                                   <span className="sm:hidden">BTCMap</span>
                                 </Badge>
@@ -1469,31 +1483,36 @@ export function BitcoinRankingDashboard() {
       </div>
 
       {showComparison && selectedItems.length > 0 && (
-        <div className="fixed bottom-4 left-4 right-4 sm:bottom-6 sm:right-6 sm:left-auto bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-full sm:max-w-md z-50">
+        <div className="fixed bottom-4 left-2 right-2 sm:bottom-6 sm:right-6 sm:left-auto bg-white border border-gray-200 rounded-lg shadow-lg p-3 sm:p-4 max-w-full sm:max-w-md z-50">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-base sm:text-lg">Compare Rankings</h3>
-            <Button variant="ghost" size="sm" onClick={() => setShowComparison(false)}>
-              <X className="h-4 w-4" />
+            <h3 className="font-semibold text-sm sm:text-lg">Compare Rankings</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowComparison(false)}
+              className="h-6 w-6 p-0 sm:h-8 sm:w-8"
+            >
+              <X className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           </div>
 
-          <div className="space-y-3 max-h-48 sm:max-h-64 overflow-y-auto">
+          <div className="space-y-2 max-h-40 sm:max-h-64 overflow-y-auto">
             {selectedItems.map((item, index) => (
               <div
                 key={`${item.type}-${item.name || item.url_alias}`}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-2 bg-orange-50 rounded gap-2"
+                className="flex items-center justify-between p-2 bg-orange-50 rounded gap-2"
               >
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <Badge variant="outline" className="text-xs flex-shrink-0">
+                <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                  <Badge variant="outline" className="text-xs px-1 py-0.5 flex-shrink-0">
                     #{item.rank || index + 1}
                   </Badge>
-                  <Badge variant="secondary" className="text-xs flex-shrink-0">
+                  <Badge variant="secondary" className="text-xs px-1 py-0.5 flex-shrink-0">
                     {item.type}
                   </Badge>
-                  <span className="font-medium text-sm truncate">{item.name || item.url_alias}</span>
+                  <span className="font-medium text-xs sm:text-sm truncate">{item.name || item.url_alias}</span>
                 </div>
-                <div className="flex items-center justify-between sm:justify-end gap-2">
-                  <span className="text-sm font-bold text-orange-600">
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-xs sm:text-sm font-bold text-orange-600">
                     {(item.merchantCount || 0).toLocaleString()}
                   </span>
                   <Button
@@ -1504,9 +1523,9 @@ export function BitcoinRankingDashboard() {
                         prev.filter((selected) => selected.name !== item.name && selected.url_alias !== item.url_alias),
                       )
                     }
-                    className="h-6 w-6 p-0"
+                    className="h-5 w-5 p-0 sm:h-6 sm:w-6"
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                   </Button>
                 </div>
               </div>
