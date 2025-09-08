@@ -875,14 +875,25 @@ export default function BitcoinRankingDashboard() {
               <div className="w-full flex justify-center">
                 <ResponsiveContainer width="100%" height={300} minWidth={250}>
                   <PieChart>
-                    <Pie data={[]} cx="50%" cy="50%" outerRadius={100} fill="#8884d8" dataKey="value" />
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                    <Pie
+                    data={organizationChartData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={150}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                  >
+                    {organizationChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Search and Filters */}
         <div className="flex flex-col gap-4">
@@ -1240,7 +1251,7 @@ export default function BitcoinRankingDashboard() {
                     outerRadius={150}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
                   >
                     {organizationChartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -1400,5 +1411,5 @@ export default function BitcoinRankingDashboard() {
         </div>
       )}
     </div>
-  )
+  )\
 }
