@@ -1060,7 +1060,7 @@ export function BitcoinRankingDashboard() {
           </TabsList>
 
           <TabsContent value="countries" className="space-y-4">
-            <Card>
+            <Card className="text-white shadow-none bg-white border-none">
               {isLoading && (
                 <div className="text-center py-8">
                   <div className="text-lg">Loading country ranking data...</div>
@@ -1159,7 +1159,7 @@ export function BitcoinRankingDashboard() {
           </TabsContent>
 
           <TabsContent value="organizations" className="space-y-4">
-            <Card>
+            <Card className="bg-white border-none rounded-none shadow-none">
               {isLoading && (
                 <div className="text-center py-8">
                   <div className="text-lg">Loading organizations ranking data...</div>
