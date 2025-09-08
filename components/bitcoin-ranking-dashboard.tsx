@@ -1235,28 +1235,35 @@ export function BitcoinRankingDashboard() {
                         }
                       }}
                     >
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Badge variant="outline" className="text-lg px-3 py-1">
+                      <CardContent className="p-3 sm:p-6">
+                        <div className="flex items-start justify-between gap-3 w-full">
+                          {/* Left side - Rank, selection, and name */}
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <Badge
+                              variant="outline"
+                              className="text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 sm:py-1 flex-shrink-0"
+                            >
                               #{org.rank}
                             </Badge>
                             {isSelected && (
-                              <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
-                                <Check className="h-3 w-3 text-white" />
+                              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <Check className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
                               </div>
                             )}
-                            <div>
-                              <h3 className="font-semibold text-lg">{org.name}</h3>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-semibold text-sm sm:text-lg leading-tight break-words">{org.name}</h3>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-orange-600">
+
+                          {/* Right side - Merchant count and badges */}
+                          <div className="text-right flex-shrink-0">
+                            <div className="text-lg sm:text-2xl font-bold text-orange-600 leading-tight">
                               {(org.merchantCount || 0).toLocaleString()}
                             </div>
-                            <div className="text-sm text-muted-foreground">merchants</div>
-                            <Badge variant="secondary" className="mt-1 text-xs">
-                              View on BTCMap (Ctrl+Click)
+                            <div className="text-xs text-muted-foreground">merchants</div>
+                            <Badge variant="secondary" className="mt-1 text-xs px-1.5 py-0.5">
+                              <span className="hidden sm:inline">View on BTCMap (Ctrl+Click)</span>
+                              <span className="sm:hidden">BTCMap</span>
                             </Badge>
                           </div>
                         </div>
