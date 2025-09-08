@@ -1044,7 +1044,7 @@ export function BitcoinRankingDashboard() {
 
         {/* Rankings Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1 my-12">
             <TabsTrigger value="countries" className="text-xs sm:text-sm">
               Countries
             </TabsTrigger>
