@@ -226,7 +226,27 @@ interface GitHubCommunityItem {
   url_alias?: string
 }
 
-type ComparisonItem = GitHubRankingItem | GitHubCountryItem | GitHubOrgItem | GitHubCommunityItem
+interface GitHubRankingItemWithType extends GitHubRankingItem {
+  type: "global"
+}
+
+interface GitHubCountryItemWithType extends GitHubCountryItem {
+  type: "country"
+}
+
+interface GitHubOrgItemWithType extends GitHubOrgItem {
+  type: "organization"
+}
+
+interface GitHubCommunityItemWithType extends GitHubCommunityItem {
+  type: "community"
+}
+
+type ComparisonItem =
+  | GitHubRankingItemWithType
+  | GitHubCountryItemWithType
+  | GitHubOrgItemWithType
+  | GitHubCommunityItemWithType
 
 export { BitcoinRankingDashboard }
 export default function BitcoinRankingDashboard() {
@@ -506,6 +526,21 @@ export default function BitcoinRankingDashboard() {
         return selected.name !== item.name
       }),
     )
+  }
+
+  const addToComparison = (item: any, itemType: string) => {
+    const itemWithType = { ...item, type: itemType }
+    setSelectedItems((prev) => {
+      if (prev.length >= 5) return prev
+      const exists = prev.some((selected) => {
+        if ("url_alias" in selected && "url_alias" in itemWithType) {
+          return selected.url_alias === itemWithType.url_alias
+        }
+        return selected.name === itemWithType.name
+      })
+      if (exists) return prev
+      return [...prev, itemWithType]
+    })
   }
 
   return (
@@ -1091,7 +1126,7 @@ export default function BitcoinRankingDashboard() {
                         if (isSelected) {
                           setSelectedItems((prev) => prev.filter((selected) => selected.name !== country.name))
                         } else {
-                          setSelectedItems((prev) => [...prev, { ...country, type: "country" }])
+                          addToComparison(country, "country")
                         }
                       }
                     }}
@@ -1159,7 +1194,7 @@ export default function BitcoinRankingDashboard() {
                         if (isSelected) {
                           setSelectedItems((prev) => prev.filter((selected) => selected.name !== org.name))
                         } else {
-                          setSelectedItems((prev) => [...prev, { ...org, type: "organization" }])
+                          addToComparison(org, "organization")
                         }
                       }
                     }}
@@ -1233,7 +1268,7 @@ export default function BitcoinRankingDashboard() {
                           if (isSelected) {
                             setSelectedItems((prev) => prev.filter((selected) => selected.name !== community.name))
                           } else {
-                            setSelectedItems((prev) => [...prev, { ...community, type: "community" }])
+                            addToComparison(community, "community")
                           }
                         }
                       }}
@@ -1288,7 +1323,7 @@ export default function BitcoinRankingDashboard() {
                       if (isSelected) {
                         setSelectedItems((prev) => prev.filter((selected) => selected.url_alias !== item.url_alias))
                       } else {
-                        setSelectedItems((prev) => [...prev, { ...item, type: "global" }])
+                        addToComparison(item, "global")
                       }
                     }}
                   >
