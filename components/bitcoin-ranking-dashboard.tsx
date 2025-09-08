@@ -503,7 +503,7 @@ export function BitcoinRankingDashboard() {
 
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 w-full">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Merchants</CardTitle>
@@ -545,21 +545,7 @@ export function BitcoinRankingDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>BTC MAP</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="w-full h-24 rounded-lg overflow-hidden bg-gray-900">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-7unmagPtmLaEWtjpUDu6aNf0GcDUWP.png"
-                  alt="BTC Map showing global Bitcoin merchant distribution"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">Global merchant distribution</p>
-            </CardContent>
-          </Card>
+          
 
           <Card>
             <CardHeader>
@@ -1076,243 +1062,208 @@ export function BitcoinRankingDashboard() {
           </TabsList>
 
           <TabsContent value="countries" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={showComparison ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowComparison(!showComparison)}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Compare ({selectedItems.length})
-                </Button>
-                {selectedItems.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
-                    Clear Selection
-                  </Button>
-                )}
-              </div>
-            </div>
+            <Card>
+              {isLoading && (
+                <div className="text-center py-8">
+                  <div className="text-lg">Loading country ranking data...</div>
+                </div>
+              )}
 
-            {isLoading && (
-              <div className="text-center py-8">
-                <div className="text-lg">Loading country ranking data...</div>
-              </div>
-            )}
+              {error && (
+                <div className="text-center py-8">
+                  <div className="text-red-600">Error: {error}</div>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="mt-2 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
 
-            {error && (
-              <div className="text-center py-8">
-                <div className="text-red-600">Error: {error}</div>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="mt-2 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
+              {!isLoading && !error && (
+                <div className="grid gap-4">
+                  {filteredGithubCountries.map((country) => {
+                    const isSelected = selectedItems.some((selected) => selected.name === country.name)
 
-            {!isLoading && !error && (
-              <div className="grid gap-4">
-                {filteredGithubCountries.map((country) => {
-                  const isSelected = selectedItems.some((selected) => selected.name === country.name)
-
-                  return (
-                    <Card
-                      key={country.rank}
-                      className={`hover:bg-muted/50 transition-colors cursor-pointer ${
-                        isSelected ? "ring-2 ring-orange-500 bg-orange-50" : ""
-                      }`}
-                      onClick={(e) => {
-                        if (e.ctrlKey || e.metaKey) {
-                          if (country.url_alias) {
-                            window.open(`https://btcmap.org/country/${country.url_alias}`, "_blank")
-                          }
-                        } else {
-                          if (isSelected) {
-                            setSelectedItems((prev) => prev.filter((selected) => selected.name !== country.name))
+                    return (
+                      <Card
+                        key={country.rank}
+                        className={`hover:bg-muted/50 transition-colors cursor-pointer ${
+                          isSelected ? "ring-2 ring-orange-500 bg-orange-50" : ""
+                        }`}
+                        onClick={(e) => {
+                          if (e.ctrlKey || e.metaKey) {
+                            if (country.url_alias) {
+                              window.open(`https://btcmap.org/country/${country.url_alias}`, "_blank")
+                            }
                           } else {
-                            setSelectedItems((prev) => [...prev, { ...country, type: "country" }])
+                            if (isSelected) {
+                              setSelectedItems((prev) => prev.filter((selected) => selected.name !== country.name))
+                            } else {
+                              setSelectedItems((prev) => [...prev, { ...country, type: "country" }])
+                            }
                           }
-                        }
-                      }}
-                    >
-                      <CardContent className="p-3 sm:p-6">
-                        <div className="flex items-start justify-between gap-3 w-full">
-                          {/* Left side - Rank, selection, flag, and name */}
-                          <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <Badge
-                              variant="outline"
-                              className="text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 sm:py-1 flex-shrink-0"
-                            >
-                              #{country.rank}
-                            </Badge>
-                            {isSelected && (
-                              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <Check className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
+                        }}
+                      >
+                        <CardContent className="p-3 sm:p-6">
+                          <div className="flex items-start justify-between gap-3 w-full">
+                            {/* Left side - Rank, selection, flag, and name */}
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                              <Badge
+                                variant="outline"
+                                className="text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 sm:py-1 flex-shrink-0"
+                              >
+                                #{country.rank}
+                              </Badge>
+                              {isSelected && (
+                                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <Check className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
+                                </div>
+                              )}
+                              <span className="text-lg sm:text-xl flex-shrink-0">
+                                {countryFlagMap[country.name] || "🏳️"}
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-semibold text-sm sm:text-lg leading-tight break-words">
+                                  {country.name}
+                                </h3>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  Pop: {(country.population || 0).toLocaleString()}
+                                </p>
                               </div>
-                            )}
-                            <span className="text-lg sm:text-xl flex-shrink-0">
-                              {countryFlagMap[country.name] || "🏳️"}
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <h3 className="font-semibold text-sm sm:text-lg leading-tight break-words">
-                                {country.name}
-                              </h3>
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                Pop: {(country.population || 0).toLocaleString()}
-                              </p>
+                            </div>
+
+                            {/* Right side - Merchant count and badges */}
+                            <div className="text-right flex-shrink-0">
+                              <div className="text-lg sm:text-2xl font-bold text-orange-600 leading-tight">
+                                {(country.merchantCount || 0).toLocaleString()}
+                              </div>
+                              <div className="text-xs text-muted-foreground">merchants</div>
+                              <div className="text-xs font-medium text-orange-600 mt-0.5">
+                                {(((country.merchantCount / country.population) * 1000) / 10).toFixed(5)}%
+                              </div>
+                              {country.url_alias && (
+                                <Badge variant="secondary" className="mt-1 text-xs px-1.5 py-0.5">
+                                  <span className="hidden sm:inline">View on BTCMap (Ctrl+Click)</span>
+                                  <span className="sm:hidden">BTCMap</span>
+                                </Badge>
+                              )}
                             </div>
                           </div>
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
+                </div>
+              )}
+            </Card>
+          </TabsContent>
 
-                          {/* Right side - Merchant count and badges */}
-                          <div className="text-right flex-shrink-0">
-                            <div className="text-lg sm:text-2xl font-bold text-orange-600 leading-tight">
-                              {(country.merchantCount || 0).toLocaleString()}
+          <TabsContent value="organizations" className="space-y-4">
+            <Card>
+              {isLoading && (
+                <div className="text-center py-8">
+                  <div className="text-lg">Loading organizations ranking data...</div>
+                </div>
+              )}
+
+              {error && (
+                <div className="text-center py-8">
+                  <div className="text-red-600">Error: {error}</div>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="mt-2 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
+
+              {!isLoading && !error && (
+                <div className="grid gap-4">
+                  {filteredGithubOrgs.map((org) => {
+                    const isSelected = selectedItems.some((selected) => selected.name === org.name)
+
+                    return (
+                      <Card
+                        key={org.rank}
+                        className={`hover:bg-muted/50 transition-colors cursor-pointer ${
+                          isSelected ? "ring-2 ring-orange-500 bg-orange-50" : ""
+                        }`}
+                        onClick={(e) => {
+                          if (e.ctrlKey || e.metaKey) {
+                            if (org.name) {
+                              window.open(`https://btcmap.org/communities/${encodeURIComponent(org.name)}`, "_blank")
+                            }
+                          } else {
+                            if (isSelected) {
+                              setSelectedItems((prev) => prev.filter((selected) => selected.name !== org.name))
+                            } else {
+                              setSelectedItems((prev) => [...prev, { ...org, type: "organization" }])
+                            }
+                          }
+                        }}
+                      >
+                        <CardContent className="p-3 sm:p-6">
+                          <div className="flex items-start justify-between gap-3 w-full">
+                            {/* Left side - Rank, selection, and name */}
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                              <Badge
+                                variant="outline"
+                                className="text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 sm:py-1 flex-shrink-0"
+                              >
+                                #{org.rank}
+                              </Badge>
+                              {isSelected && (
+                                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <Check className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
+                                </div>
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-semibold text-sm sm:text-lg leading-tight break-words">
+                                  {org.name}
+                                </h3>
+                              </div>
                             </div>
-                            <div className="text-xs text-muted-foreground">merchants</div>
-                            <div className="text-xs font-medium text-orange-600 mt-0.5">
-                              {(((country.merchantCount / country.population) * 1000) / 10).toFixed(5)}%
-                            </div>
-                            {country.url_alias && (
+
+                            {/* Right side - Merchant count and badges */}
+                            <div className="text-right flex-shrink-0">
+                              <div className="text-lg sm:text-2xl font-bold text-orange-600 leading-tight">
+                                {(org.merchantCount || 0).toLocaleString()}
+                              </div>
+                              <div className="text-xs text-muted-foreground">merchants</div>
                               <Badge variant="secondary" className="mt-1 text-xs px-1.5 py-0.5">
                                 <span className="hidden sm:inline">View on BTCMap (Ctrl+Click)</span>
                                 <span className="sm:hidden">BTCMap</span>
                               </Badge>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )
-                })}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="organizations" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={showComparison ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowComparison(!showComparison)}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Compare ({selectedItems.length})
-                </Button>
-                {selectedItems.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
-                    Clear Selection
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {isLoading && (
-              <div className="text-center py-8">
-                <div className="text-lg">Loading organizations ranking data...</div>
-              </div>
-            )}
-
-            {error && (
-              <div className="text-center py-8">
-                <div className="text-red-600">Error: {error}</div>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="mt-2 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-
-            {!isLoading && !error && (
-              <div className="grid gap-4">
-                {filteredGithubOrgs.map((org) => {
-                  const isSelected = selectedItems.some((selected) => selected.name === org.name)
-
-                  return (
-                    <Card
-                      key={org.rank}
-                      className={`hover:bg-muted/50 transition-colors cursor-pointer ${
-                        isSelected ? "ring-2 ring-orange-500 bg-orange-50" : ""
-                      }`}
-                      onClick={(e) => {
-                        if (e.ctrlKey || e.metaKey) {
-                          if (org.name) {
-                            window.open(`https://btcmap.org/communities/${encodeURIComponent(org.name)}`, "_blank")
-                          }
-                        } else {
-                          if (isSelected) {
-                            setSelectedItems((prev) => prev.filter((selected) => selected.name !== org.name))
-                          } else {
-                            setSelectedItems((prev) => [...prev, { ...org, type: "organization" }])
-                          }
-                        }
-                      }}
-                    >
-                      <CardContent className="p-3 sm:p-6">
-                        <div className="flex items-start justify-between gap-3 w-full">
-                          {/* Left side - Rank, selection, and name */}
-                          <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <Badge
-                              variant="outline"
-                              className="text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 sm:py-1 flex-shrink-0"
-                            >
-                              #{org.rank}
-                            </Badge>
-                            {isSelected && (
-                              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <Check className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
-                              </div>
-                            )}
-                            <div className="min-w-0 flex-1">
-                              <h3 className="font-semibold text-sm sm:text-lg leading-tight break-words">{org.name}</h3>
                             </div>
                           </div>
-
-                          {/* Right side - Merchant count and badges */}
-                          <div className="text-right flex-shrink-0">
-                            <div className="text-lg sm:text-2xl font-bold text-orange-600 leading-tight">
-                              {(org.merchantCount || 0).toLocaleString()}
-                            </div>
-                            <div className="text-xs text-muted-foreground">merchants</div>
-                            <Badge variant="secondary" className="mt-1 text-xs px-1.5 py-0.5">
-                              <span className="hidden sm:inline">View on BTCMap (Ctrl+Click)</span>
-                              <span className="sm:hidden">BTCMap</span>
-                            </Badge>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )
-                })}
-              </div>
-            )}
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
+                </div>
+              )}
+            </Card>
           </TabsContent>
 
           <TabsContent value="communities" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={showComparison ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowComparison(!showComparison)}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Compare ({selectedItems.length})
-                </Button>
-                {selectedItems.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedItems([])}>
-                    Clear Selection
-                  </Button>
-                )}
-              </div>
-            </div>
+            <Card className="bg-orange-50 border-orange-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-lg text-orange-800">Total Community Merchants</h3>
+                    <p className="text-sm text-orange-600">Combined across all communities</p>
+                  </div>
+                  <div className="text-3xl font-bold text-orange-600">
+                    {githubCommunityData
+                      .reduce((sum, community) => sum + (community.merchantCount || 0), 0)
+                      .toLocaleString()}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {isLoading && (
               <div className="text-center py-8">
@@ -1334,22 +1285,6 @@ export function BitcoinRankingDashboard() {
 
             {!isLoading && !error && (
               <div className="space-y-4">
-                <Card className="bg-orange-50 border-orange-200">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-lg text-orange-800">Total Community Merchants</h3>
-                        <p className="text-sm text-orange-600">Combined across all communities</p>
-                      </div>
-                      <div className="text-3xl font-bold text-orange-600">
-                        {githubCommunityData
-                          .reduce((sum, community) => sum + (community.merchantCount || 0), 0)
-                          .toLocaleString()}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
                 <div className="grid gap-4">
                   {filteredGithubCommunities.map((community) => {
                     const isSelected = selectedItems.some((selected) => selected.name === community.name)
