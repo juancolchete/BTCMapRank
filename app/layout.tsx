@@ -9,7 +9,6 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "🔺UAIBIT BTCMAP RANK🔺",
   description: "BTCMAP rank to better insight developed by UAIBIT",
-  generator: "v0.app",
 }
 
 export default function RootLayout({
@@ -20,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+        <link rel="icon" href="/uaibit.png" sizes="any" />
         <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
         <Analytics />
       </body>
