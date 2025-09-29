@@ -228,7 +228,7 @@ interface GitHubCommunityItem {
 export function BitcoinRankingDashboard() {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("merchants")
-  const [activeTab, setActiveTab] = useState("global")
+  const [activeTab, setActiveTab] = useState("countries")
   const [githubRankingData, setGithubRankingData] = useState<GitHubRankingItem[]>([])
   const [githubCountryData, setGithubCountryData] = useState<GitHubCountryItem[]>([])
   const [githubOrgData, setGithubOrgData] = useState<GitHubOrgItem[]>([])
