@@ -472,7 +472,7 @@ export function BitcoinRankingDashboard() {
     .map((country, index) => ({
       ...country,
       rank: index + 1,
-      adoptionRate: country.population > 0 ? (country.merchantCount / country.population) * 1000 : 0,
+      adoptionRate: country.population > 0 ? (country.merchantCount / country.population) * 100000 : 0,
     }))
 
   const filteredGithubOrgs = githubOrgData
@@ -1207,7 +1207,7 @@ export function BitcoinRankingDashboard() {
                               </div>
                               <div className="text-xs text-muted-foreground">merchants</div>
                               <div className="text-xs font-medium text-orange-600 mt-0.5">
-                                {(((country.merchantCount / country.population) * 1000) / 10).toFixed(5)}%
+                                {(((country.merchantCount / country.population) * 100000)).toFixed(5)}%
                               </div>
                               {country.url_alias && (
                                 <Badge variant="secondary" className="mt-1 text-xs px-1.5 py-0.5">
